@@ -1,13 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
-import {
-  View,
-  Dimensions,
-  StyleSheet,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { View, Dimensions, StyleSheet, Text, FlatList } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { BarChart, PieChart } from "react-native-chart-kit";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ExpenseContext } from "../../context/expenseContext";
@@ -17,11 +10,9 @@ import {
   format,
   subWeeks,
   addWeeks,
-  isSameDay,
   isWithinInterval,
 } from "date-fns";
 import NavigationArrows from "./utils/NavigationArrows";
-import { Picker } from "@react-native-picker/picker";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 
@@ -95,12 +86,14 @@ const WeeklyChart = () => {
   const handleDayPress = (dayIndex) => {
     const selectedDate = addDays(startOfWeekDate, dayIndex);
 
-    if (isSameDay(selectedDate, new Date())) {
-      navigation.navigate("DailyChart");
-    } else {
-      navigation.navigate("SelectedDayChart", {
-        selectedDay: selectedDate,
-        transactions,
+    if (
+      isWithinInterval(selectedDate, {
+        start: startOfWeekDate,
+        end: endOfWeekDate,
+      })
+    ) {
+      navigation.navigate("DailyChart", {
+        selectedDay: selectedDate.toISOString(),
       });
     }
   };
@@ -116,68 +109,70 @@ const WeeklyChart = () => {
     }
   };
 
+  const renderHeader = () => {
+    return (
+      <View style={styles.scrollContainer}>
+        <Picker
+          selectedValue={selectedChart}
+          onValueChange={handleChartChange}
+          style={styles.picker}
+          itemStyle={styles.pickerItem}
+        >
+          <Picker.Item label="Daily" value="daily" />
+          <Picker.Item label="Weekly" value="weekly" />
+          <Picker.Item label="Monthly" value="monthly" />
+        </Picker>
+        <NavigationArrows
+          onPrevious={handlePreviousWeek}
+          onNext={handleNextWeek}
+          currentDate={currentWeek}
+        />
+        <Text style={styles.chartTitle}>
+          Weekly Expenses ({format(startOfWeekDate, "MMMM dd")} -{" "}
+          {format(endOfWeekDate, "MMMM dd")})
+        </Text>
+        <BarChart
+          data={weeklyData(transactions, startOfWeekDate, endOfWeekDate)}
+          width={screenWidth - 40}
+          height={220}
+          chartConfig={chartConfig}
+          style={styles.chart}
+          showValuesOnTopOfBars={true}
+          withVerticalLabels={true}
+          withHorizontalLabels={false}
+        />
+      </View>
+    );
+  };
+
   return (
     <>
       <View style={styles.container}>
         <Header heading="Expense Tracker" />
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-        >
-          <Picker
-            selectedValue={selectedChart}
-            onValueChange={handleChartChange}
-            style={styles.picker}
-            itemStyle={styles.pickerItem}
-          >
-            <Picker.Item label="Daily" value="daily" />
-            <Picker.Item label="Weekly" value="weekly" />
-            <Picker.Item label="Monthly" value="monthly" />
-          </Picker>
-          <NavigationArrows
-            onPrevious={handlePreviousWeek}
-            onNext={handleNextWeek}
-            currentDate={currentWeek}
-          />
-          <Text style={styles.chartTitle}>
-            Weekly Expenses ({format(startOfWeekDate, "MMMM dd")} -{" "}
-            {format(endOfWeekDate, "MMMM dd")})
-          </Text>
-          <BarChart
-            data={weeklyData(transactions, startOfWeekDate, endOfWeekDate)}
-            width={screenWidth - 40}
-            height={220}
-            chartConfig={chartConfig}
-            style={styles.chart}
-            showValuesOnTopOfBars={true}
-            withVerticalLabels={true}
-            withHorizontalLabels={false}
-          />
-          {Object.entries(transactionsByMonth).map(
-            ([month, monthTransactions]) => (
-              <View key={month} style={styles.pieChartContainer}>
-                <Text style={styles.totalExpense}>
-                  Total Expense for this week of {month}:{" "}
-                  {monthTransactions.reduce(
-                    (acc, transaction) => acc + transaction.amount,
-                    0
-                  )}
-                </Text>
-                <PieChart
-                  data={processCategoryData(monthTransactions)}
-                  width={screenWidth - 20}
-                  height={220}
-                  chartConfig={chartConfig}
-                  accessor="amount"
-                  backgroundColor="transparent"
-                  center={[5, 0]}
-                  absolute
-                />
+        <FlatList
+          data={weeklyTransactions}
+          keyExtractor={(item) => item._id}
+          ListHeaderComponent={renderHeader}
+          renderItem={({ item }) => (
+            <View style={styles.transactionItem}>
+              <View style={styles.transactionDetails}>
+                <Text style={styles.merchant}>{item.merchant}</Text>
+                <Text style={styles.category}>{item.category}</Text>
               </View>
-            )
+              <Text
+                style={[
+                  styles.amount,
+                  item.transaction_type === "credit"
+                    ? styles.credit
+                    : styles.debit,
+                ]}
+              >
+                {item.transaction_type === "credit" ? "+" : "-"}
+                {item.amount}
+              </Text>
+            </View>
           )}
-        </ScrollView>
+        />
       </View>
       <Footer navigation={navigation} />
     </>
@@ -259,7 +254,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#E1E6F9",
   },
   scrollContainer: {
-    padding: 15,
+    padding: 20,
   },
   chartTitle: {
     fontSize: 18,
@@ -296,7 +291,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
   },
   picker: {
-    width: screenWidth - 20,
+    width: screenWidth - 40,
     marginVertical: 10,
     backgroundColor: "#f0f0f0", // Add a light background color for contrast
     borderRadius: 5, // Rounded corners
@@ -311,6 +306,36 @@ const styles = StyleSheet.create({
   },
   pickerItem: {
     color: "#000", // Text color for better contrast
+  },
+  transactionItem: {
+    backgroundColor: "#f9f9f9",
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 30,
+  },
+  transactionDetails: {
+    flexDirection: "column",
+  },
+  merchant: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  category: {
+    fontSize: 14,
+    color: "#666",
+  },
+  amount: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  credit: {
+    color: "green",
+  },
+  debit: {
+    color: "red",
   },
 });
 

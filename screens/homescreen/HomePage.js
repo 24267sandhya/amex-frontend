@@ -104,39 +104,51 @@ const HomePage = ({ navigation }) => {
             />
             <View style={styles.profileTextContainer}>
               <Text style={styles.profileText}>Hello!</Text>
-              <Text style={styles.profileName}>Chandni</Text>
+              <Text style={styles.profileName}>{authState.user?.name}</Text>
             </View>
           </View>
           <View style={styles.headerIcons}>
             <Icon
-              name="chart-bar"
+              name="bell"
               type="font-awesome-5"
               size={24}
               color="#002663"
+              iconStyle={styles.iconSpacing}
+              onPress={() => navigation.navigate("NotificationsScreen")}
             />
-            <Icon name="bell" type="font-awesome-5" size={24} color="#002663" />
             <Icon
-              name="cog"
-              type="font-awesome-5"
+              name="qr-code"
+              type="material"
               size={24}
               color="#002663"
-              containerStyle={styles.icon}
+              iconStyle={styles.iconSpacing}
+              onPress={() => navigation.navigate("QrScanner")}
+            />
+            <TouchableOpacity
+              onPress={() => navigation.navigate("GeneralChatbot")}
+              style={styles.iconSpacing}
+            >
+              <Image
+                source={require("../../assets/chat.png")}
+                style={styles.chatLogo}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <TouchableOpacity onPress={() => navigation.navigate("DailyChart")}>
+          <View style={styles.expenseCard}>
+            <View style={styles.expenseCardContent}>
+              <Text style={styles.expenseCardTitle}>Total Expense</Text>
+              <Text style={styles.expenseAmount}>-₹{expense}</Text>
+              <Text style={styles.currentValue}>Current Balance</Text>
+              <Text style={styles.currentAmount}>₹{balance}</Text>
+            </View>
+            <Image
+              source={require("../../assets/golden-tree.png")}
+              style={styles.expenseImage}
             />
           </View>
-        </View>
-        <View style={styles.expenseCard}>
-          <View style={styles.expenseCardContent}>
-            <Text style={styles.expenseCardTitle}>Total Expense</Text>
-            <Text style={styles.expenseAmount}>-₹{expense}</Text>
-            <Text style={styles.expenseDuration}>in 5 days</Text>
-            <Text style={styles.currentValue}>Current Balance</Text>
-            <Text style={styles.currentAmount}>₹{balance}</Text>
-          </View>
-          <Image
-            source={require("../../assets/golden-tree.png")}
-            style={styles.expenseImage}
-          />
-        </View>
+        </TouchableOpacity>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -224,7 +236,7 @@ const HomePage = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.gridItem}
-            onPress={() => navigation.navigate("GoalSetter")}
+            onPress={() => navigation.navigate("GoalList")}
           >
             <Image
               source={require("../../assets/home/goalsetter.png")}
@@ -280,12 +292,17 @@ const styles = StyleSheet.create({
     color: "#002663",
     fontWeight: "bold",
   },
+  chatLogo: {
+    height: 30,
+    width: 30,
+  },
   headerIcons: {
     flexDirection: "row",
     alignItems: "center",
+    marginHorizontal: 5,
   },
-  icon: {
-    marginLeft: 10,
+  iconSpacing: {
+    marginHorizontal: 5,
   },
   expenseCard: {
     height: 200,

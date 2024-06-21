@@ -5,9 +5,11 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Image,
   Alert,
   ActivityIndicator,
 } from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
 import axios from "axios";
 import { AuthContext } from "../../context/authContext";
@@ -22,12 +24,34 @@ const PortfolioPage = () => {
   const [funds, setFunds] = useState([]);
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [stockDetails, setStockDetails] = useState(null);
 
   useEffect(() => {
     if (isFocused) {
       fetchUserPortfolio();
     }
   }, [isFocused]);
+
+  const getMostRecentDate = () => {
+    const today = moment();
+    let mostRecentDate = today;
+
+    if (today.day() === 0) {
+      // Sunday, get the previous Friday
+      mostRecentDate = today.subtract(2, "days");
+    } else if (today.day() === 6) {
+      // Saturday, get the previous Friday
+      mostRecentDate = today.subtract(1, "days");
+    } else if (today.day() === 1) {
+      // Monday, get the previous Friday
+      mostRecentDate = today.subtract(3, "days");
+    } else {
+      // For Tuesday to Friday, get the previous day
+      mostRecentDate = today.subtract(1, "day");
+    }
+
+    return mostRecentDate.format("YYYY-MM-DD");
+  };
 
   const fetchUserPortfolio = async () => {
     setLoading(true);
@@ -62,6 +86,20 @@ const PortfolioPage = () => {
     }
   };
 
+  const fetchStockDetails = async (stockSymbol) => {
+    const date = getMostRecentDate();
+    try {
+      const response = await axios.get(
+        `/api/v1/stock/details/${stockSymbol}/${date}`
+      );
+      setStockDetails(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching recent stock details:", error);
+      return null;
+    }
+  };
+
   const handleInvestMorePress = (fund) => {
     navigation.navigate("BuyFundsPage", {
       fund,
@@ -70,30 +108,104 @@ const PortfolioPage = () => {
   };
 
   const handleSellPress = (fund) => {
-    navigation.navigate("SellFundsPage", {
+    navigation.navigate("SellFundsScreen", {
       fund,
       onSuccess: fetchUserPortfolio,
     });
   };
 
-  const handleStockInvestMorePress = (stock) => {
-    navigation.navigate("BuyStock", {
-      stock,
-      onSuccess: fetchUserPortfolio,
-    });
+  const handleStockInvestMorePress = async (stock) => {
+    const details = await fetchStockDetails(stock.stockSymbol);
+    if (details) {
+      navigation.navigate("BuyStock", {
+        stockDetails: details,
+        onSuccess: fetchUserPortfolio,
+      });
+    }
   };
 
-  const handleStockSellPress = (stock) => {
-    navigation.navigate("SellStock", {
-      stock,
-      onSuccess: fetchUserPortfolio,
-    });
+  const handleStockSellPress = async (stock) => {
+    const details = await fetchStockDetails(stock.stockSymbol);
+    if (details) {
+      navigation.navigate("SellStock", {
+        stockDetails: details,
+        onSuccess: fetchUserPortfolio,
+      });
+    }
   };
+
+  const handlePress = () => {
+    alert("Footer icon pressed");
+  };
+
+  const renderFundData = (fund) => (
+    <View key={fund._id} style={styles.card}>
+      <Text style={styles.fundName}>{fund.fundName}</Text>
+      <Text style={styles.amount}>Amount: ₹{fund.amount}</Text>
+      <Text style={styles.amount}>
+        Purchase Date: {moment(fund.purchaseDate).format("DD MMM YYYY")}
+      </Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleInvestMorePress(fund)}
+        >
+          <Text style={styles.buttonText}>Invest More</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleSellPress(fund)}
+        >
+          <Text style={styles.buttonText}>Sell</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  const renderStockData = (stock) => (
+    <View key={stock._id} style={styles.card}>
+      <Text style={styles.stockName}>
+        {stock.stockName} ({stock.stockSymbol})
+      </Text>
+      <Text>Current Price: ₹{stock.currentPrice.toFixed(3)}</Text>
+      <Text>Daily Return: ₹{stock.dailyReturn.toFixed(3)}</Text>
+      <Text>Total Return: ₹{stock.totalReturn.toFixed(3)}</Text>
+      <Text>Quantity: {stock.quantity}</Text>
+      <Text style={styles.amount}>
+        Purchase Date: {moment(stock.purchaseDate).format("DD MMM YYYY")}
+      </Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleStockInvestMorePress(stock)}
+        >
+          <Text style={styles.buttonText}>Invest More</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleStockSellPress(stock)}
+        >
+          <Text style={styles.buttonText}>Sell</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   return (
     <>
       <View style={styles.container}>
-        <Header heading="Portfolio" />
+        <Header heading="Portfolio Page" />
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => alert("Curate your own plan pressed")}
+          >
+            <Text style={styles.planButton}>Curate your own plan</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => alert("Profile pressed")}>
+            <Ionicons name="person-circle" size={30} color="#FF9800" />
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.tabs}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <TouchableOpacity
@@ -113,69 +225,18 @@ const PortfolioPage = () => {
         </View>
 
         {loading ? (
-          <ActivityIndicator size="large" color="#016FD0" />
+          <ActivityIndicator size="large" color="#0000ff" />
         ) : (
           <ScrollView contentContainerStyle={styles.content}>
             <Text style={styles.sectionTitle}>Stocks</Text>
             {stocks.length > 0 ? (
-              stocks.map((stock) => (
-                <View key={stock._id} style={styles.card}>
-                  <Text style={styles.stockName}>
-                    {stock.stockName} ({stock.stockSymbol})
-                  </Text>
-                  <Text>Current Price: ₹{stock.currentPrice.toFixed(3)}</Text>
-                  <Text>Daily Return: ₹{stock.dailyReturn.toFixed(3)}</Text>
-                  <Text>Total Return: ₹{stock.totalReturn.toFixed(3)}</Text>
-                  <Text>Quantity: {stock.quantity}</Text>
-                  <Text style={styles.amount}>
-                    Purchase Date:{" "}
-                    {moment(stock.purchaseDate).format("DD MMM YYYY")}
-                  </Text>
-                  <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                      style={styles.button}
-                      onPress={() => handleStockInvestMorePress(stock)}
-                    >
-                      <Text style={styles.buttonText}>Invest More</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.button}
-                      onPress={() => handleStockSellPress(stock)}
-                    >
-                      <Text style={styles.buttonText}>Sell</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              ))
+              stocks.map(renderStockData)
             ) : (
               <Text style={styles.noDataText}>No stocks purchased.</Text>
             )}
             <Text style={styles.sectionTitle}>Funds</Text>
             {funds.length > 0 ? (
-              funds.map((fund) => (
-                <View key={fund._id} style={styles.card}>
-                  <Text style={styles.fundName}>{fund.fundName}</Text>
-                  <Text style={styles.amount}>Amount: ₹{fund.amount}</Text>
-                  <Text style={styles.amount}>
-                    Purchase Date:{" "}
-                    {moment(fund.purchaseDate).format("DD MMM YYYY")}
-                  </Text>
-                  <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                      style={styles.button}
-                      onPress={() => handleInvestMorePress(fund)}
-                    >
-                      <Text style={styles.buttonText}>Invest More</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.button}
-                      onPress={() => handleSellPress(fund)}
-                    >
-                      <Text style={styles.buttonText}>Sell</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              ))
+              funds.map(renderFundData)
             ) : (
               <Text style={styles.noDataText}>No funds purchased.</Text>
             )}
@@ -190,12 +251,29 @@ const PortfolioPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#E1E6F9",
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    backgroundColor: "#003366",
+  },
+  headerTitle: {
+    fontSize: 20,
+    color: "white",
+    fontWeight: "bold",
+  },
+  planButton: {
+    color: "#FF9800",
+    fontWeight: "bold",
   },
   tabs: {
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: "#016FD0",
+    backgroundColor: "#003366",
   },
   tab: {
     paddingVertical: 10,
@@ -210,21 +288,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#016FD0",
+    color: "#003366",
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#FFFFFF",
     padding: 16,
     borderRadius: 10,
-    marginTop: 10,
     marginBottom: 10,
     borderColor: "#E0E0E0",
     borderWidth: 1,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
-    elevation: 5,
   },
   stockName: {
     fontSize: 16,
@@ -262,6 +334,28 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 16,
     color: "red",
+  },
+  footer: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    height: 70,
+    backgroundColor: "#fff",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    borderTopWidth: 1,
+    borderColor: "#ccc",
+  },
+  touchableOpacity: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  footerIcon: {
+    width: 30,
+    height: 30,
   },
 });
 

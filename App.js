@@ -45,8 +45,15 @@ import AddTransactionScreen from "./screens/expense-tracker/transactions/AddTran
 import WeeklyChart from "./screens/expense-tracker/WeeklyChart";
 import MonthlyChart from "./screens/expense-tracker/MonthlyChart";
 import DailyChart from "./screens/expense-tracker/DailyChart";
-import ChangePasswordScreen from "./screens/homescreen/ChangePasswordScreen";
 import NotificationsScreen from "./screens/homescreen/NotificationsScreen";
+import UpdateProfilePage from "./screens/homescreen/UpdateProfilePage";
+import QrCodeScreen from "./screens/homescreen/QrCodeScreen";
+import ChatScreen from "./screens/homescreen/ChatScreen";
+import PrivacyPolicyScreen from "./screens/homescreen/PrivacyPolicyScreen";
+import FeedbackScreen from "./screens/homescreen/FeedbackScreen";
+import GeneralChatbot from "./screens/chatbot/GeneralChatbot";
+import CompletedGoalsScreen from "./screens/goal-setter/CompletedGoalsScreen";
+import Rewards from "./screens/goal-setter/Rewards";
 
 const Stack = createStackNavigator();
 
@@ -93,8 +100,13 @@ const App = () => {
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="ChangePasswordScreen"
-              component={ChangePasswordScreen}
+              name="UpdateProfilePage"
+              component={UpdateProfilePage}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="QrCodeScreen"
+              component={QrCodeScreen}
               options={{ headerShown: false }}
             />
 
@@ -112,6 +124,26 @@ const App = () => {
             <Stack.Screen
               name="NotificationsScreen"
               component={NotificationsScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ChatScreen"
+              component={ChatScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="PrivacyPolicyScreen"
+              component={PrivacyPolicyScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="FeedbackScreen"
+              component={FeedbackScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="GeneralChatbot"
+              component={GeneralChatbot}
               options={{ headerShown: false }}
             />
 
@@ -167,12 +199,22 @@ const App = () => {
               component={GoalListScreen}
               options={{ headerShown: false }}
             />
+            <Stack.Screen
+              name="Rewards"
+              component={Rewards}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="CompletedGoalsScreen"
+              component={CompletedGoalsScreen}
+              options={{ headerShown: false }}
+            />
 
             {/* Investment Manager */}
 
             {/* Mutual Funds */}
             <Stack.Screen
-              name="BuyFunds"
+              name="BuyFundsPage"
               component={BuyFundsPage}
               options={{ headerShown: false }}
             />

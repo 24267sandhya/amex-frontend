@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
+import { View, Text, StyleSheet, TextInput, Alert, Image } from "react-native";
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../../context/authContext";
 import InputBox from "../../components/Forms/InputBox";
@@ -51,38 +51,49 @@ const Login = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.pageTitle}>Login</Text>
-      <View style={{ marginHorizontal: 20 }}>
-        <InputBox
-          inputTitle={"Email"}
-          keyboardType="email-address"
-          autoComplete="email"
-          value={email}
-          setValue={setEmail}
-        />
-        <InputBox
-          inputTitle={"Password"}
-          secureTextEntry={true}
-          autoComplete="password"
-          value={password}
-          setValue={setPassword}
-        />
+      <View style={styles.logoContainer}>
+        <View style={styles.logoBackground}>
+          <Image
+            source={require("../../assets/Login.png")} // Replace with your logo path
+            style={styles.logo}
+          />
+        </View>
       </View>
-      {/*<Text>{JSON.stringify({name, email, password}, null, 4)}</Text>*/}
-      <SubmitButton
-        btnTitle="Login"
-        loading={loading}
-        handleSubmit={handleSubmit}
-      />
-      <Text style={styles.linkText}>
-        Not a user? Please{" "}
-        <Text
-          style={styles.link}
-          onPress={() => navigation.navigate("Register")}
-        >
-          REGISTER
-        </Text>{" "}
-      </Text>
+      <View style={styles.formContainer}>
+        <Text style={styles.pageTitle}>Login</Text>
+
+        <View style={{ marginHorizontal: 20 }}>
+          <InputBox
+            inputTitle={"Email"}
+            keyboardType="email-address"
+            autoComplete="email"
+            value={email}
+            setValue={setEmail}
+          />
+          <InputBox
+            inputTitle={"Password"}
+            secureTextEntry={true}
+            autoComplete="password"
+            value={password}
+            setValue={setPassword}
+          />
+        </View>
+        {/*<Text>{JSON.stringify({name, email, password}, null, 4)}</Text>*/}
+        <SubmitButton
+          btnTitle="Login"
+          loading={loading}
+          handleSubmit={handleSubmit}
+        />
+        <Text style={styles.linkText}>
+          Not a user? Please{" "}
+          <Text
+            style={styles.link}
+            onPress={() => navigation.navigate("Register")}
+          >
+            REGISTER
+          </Text>{" "}
+        </Text>
+      </View>
     </View>
   );
 };
@@ -90,8 +101,28 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#016FD0",
+    alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#e1d5c9",
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  logoBackground: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  formContainer: {
+    width: "90%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
   },
   pageTitle: {
     fontSize: 40,

@@ -7,64 +7,46 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  ScrollView,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import axios from "axios";
 import { AuthContext } from "../../context/authContext";
+import Footer from "../../components/Footer";
+import Header from "../../components/Header";
 
 const GoalSetterScreen = ({ navigation }) => {
-  const [date, setDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const [amount, setAmount] = useState("");
-  const [type, setType] = useState("");
-  const [duration, setDuration] = useState("");
   const [category, setCategory] = useState("");
-  const [showCategory, setShowCategory] = useState(false);
-  const [otherCategory, setOtherCategory] = useState("");
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [alertAmount, setAlertAmount] = useState("");
+  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [authState] = useContext(AuthContext);
 
-  const handleTypeChange = (value) => {
-    setType(value);
-    if (value === "limit") {
-      setShowCategory(true);
-    } else {
-      setShowCategory(false);
-      setCategory("");
-    }
-  };
-
   const handleDone = async () => {
-    if (
-      !amount ||
-      !type ||
-      !duration ||
-      (showCategory && !category) ||
-      (category === "others" && !otherCategory)
-    ) {
+    if (!amount || !category || !startDate || !endDate || !alertAmount) {
       Alert.alert("Error", "Please fill all required fields");
       return;
     }
 
     const goalData = {
-      date: date.toISOString(),
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
       amount: parseFloat(amount),
-      type,
-      duration,
-      category: category === "others" ? otherCategory : category,
+      category,
+      alertAmount: parseFloat(alertAmount),
     };
 
     try {
-      const response = await axios.post(
-        "http://192.168.0.5:3000/api/goals",
-        goalData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authState.token}`,
-          },
-        }
-      );
+      const response = await axios.post("/api/v1/goal/add-goal", goalData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authState.token}`,
+        },
+      });
       if (response.status === 201) {
         Alert.alert("Success", "Goal added successfully");
         navigation.navigate("GoalList");
@@ -77,101 +59,101 @@ const GoalSetterScreen = ({ navigation }) => {
     }
   };
 
-  const handleDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShowDatePicker(false);
-    setDate(currentDate);
+  const handleStartDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || startDate;
+    setShowStartDatePicker(false);
+    setStartDate(currentDate);
+  };
+
+  const handleEndDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || endDate;
+    setShowEndDatePicker(false);
+    setEndDate(currentDate);
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Goal Setter</Text>
-      <TouchableOpacity
-        onPress={() => setShowDatePicker(true)}
-        style={styles.datePickerButton}
-      >
-        <Text style={styles.datePickerText}>{date.toDateString()}</Text>
-      </TouchableOpacity>
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
-      )}
-      <TextInput
-        style={styles.input}
-        placeholder="Amount"
-        keyboardType="numeric"
-        value={amount}
-        onChangeText={setAmount}
-      />
-      <Picker
-        selectedValue={type}
-        onValueChange={handleTypeChange}
-        style={styles.input}
-      >
-        <Picker.Item label="Select Type" value="" />
-        <Picker.Item label="Target" value="target" />
-        <Picker.Item label="Limit" value="limit" />
-      </Picker>
-      <Picker
-        selectedValue={duration}
-        onValueChange={setDuration}
-        style={styles.input}
-      >
-        <Picker.Item label="Select Duration" value="" />
-        <Picker.Item label="1 month" value="1" />
-        <Picker.Item label="2 months" value="2" />
-        <Picker.Item label="3 months" value="3" />
-        <Picker.Item label="4 months" value="4" />
-        <Picker.Item label="5 months" value="5" />
-        <Picker.Item label="6 months" value="6" />
-      </Picker>
-      {showCategory && (
-        <Picker
-          selectedValue={category}
-          onValueChange={setCategory}
-          style={styles.input}
-        >
-          <Picker.Item label="Select Category" value="" />
-          <Picker.Item label="Food" value="food" />
-          <Picker.Item label="Grocery" value="grocery" />
-          <Picker.Item label="Shopping" value="shopping" />
-          <Picker.Item label="Bills" value="bills" />
-          <Picker.Item label="Debt" value="debt" />
-          <Picker.Item label="Others" value="others" />
-        </Picker>
-      )}
-      {category === "others" && (
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Category"
-          value={otherCategory}
-          onChangeText={setOtherCategory}
-        />
-      )}
-      <Button title="Done" color="#007AFF" onPress={handleDone} />
-      <View style={styles.bottomNav}>
-        <Text style={styles.navIcon}>🏠</Text>
-        <Text style={styles.navIcon}>📅</Text>
-        <Text style={styles.navIcon}>📊</Text>
-        <Text style={styles.navIcon}>🛒</Text>
-        <Text style={styles.navIcon}>📈</Text>
+    <>
+      <View style={styles.container}>
+        <Header heading="Goal Setter" />
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <TouchableOpacity
+            onPress={() => setShowStartDatePicker(true)}
+            style={styles.datePickerButton}
+          >
+            <Text style={styles.datePickerText}>
+              Start Date: {startDate.toLocaleDateString()}
+            </Text>
+          </TouchableOpacity>
+          {showStartDatePicker && (
+            <DateTimePicker
+              value={startDate}
+              mode="date"
+              display="default"
+              onChange={handleStartDateChange}
+            />
+          )}
+          <TouchableOpacity
+            onPress={() => setShowEndDatePicker(true)}
+            style={styles.datePickerButton}
+          >
+            <Text style={styles.datePickerText}>
+              End Date: {endDate.toLocaleDateString()}
+            </Text>
+          </TouchableOpacity>
+          {showEndDatePicker && (
+            <DateTimePicker
+              value={endDate}
+              mode="date"
+              display="default"
+              onChange={handleEndDateChange}
+            />
+          )}
+          <TextInput
+            style={styles.input}
+            placeholder="Amount"
+            keyboardType="numeric"
+            value={amount}
+            onChangeText={setAmount}
+          />
+          <Picker
+            selectedValue={category}
+            onValueChange={setCategory}
+            style={styles.input}
+          >
+            <Picker.Item label="Select Category" value="" />
+            <Picker.Item label="Food" value="Food" />
+            <Picker.Item label="Grocery" value="Grocery" />
+            <Picker.Item label="Shopping" value="Shopping" />
+            <Picker.Item label="Bills" value="Bills" />
+            <Picker.Item label="Debt" value="Debts" />
+            <Picker.Item label="Others" value="Others" />
+          </Picker>
+          <TextInput
+            style={styles.input}
+            placeholder="Alert Amount"
+            keyboardType="numeric"
+            value={alertAmount}
+            onChangeText={setAlertAmount}
+          />
+          <Button title="Done" color="#007AFF" onPress={handleDone} />
+        </ScrollView>
       </View>
-    </View>
+      <Footer navigation={navigation} />
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: "#fff",
+  },
+  scrollContainer: {
+    padding: 20,
   },
   title: {
     fontSize: 24,
+    color: "#444",
     fontWeight: "bold",
     textAlign: "center",
     marginVertical: 20,

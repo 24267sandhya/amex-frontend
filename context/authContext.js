@@ -17,7 +17,7 @@ const AuthProvider = ({ children }) => {
 
   // default axios setting
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  axios.defaults.baseURL = "http://192.168.0.5:3000";
+  axios.defaults.baseURL = "http://192.168.29.47:3000";
 
   // initial local storage data
   useEffect(() => {
@@ -29,8 +29,13 @@ const AuthProvider = ({ children }) => {
     loadLocalStorageData();
   }, []);
 
+  const logout = async () => {
+    await AsyncStorage.removeItem("@auth");
+    setState({ user: null, token: "" });
+  };
+
   return (
-    <AuthContext.Provider value={[state, setState]}>
+    <AuthContext.Provider value={[state, setState, logout]}>
       {children}
     </AuthContext.Provider>
   );

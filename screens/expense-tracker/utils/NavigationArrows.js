@@ -7,13 +7,13 @@ const NavigationArrows = ({ onPrevious, onNext, currentDate }) => {
   return (
     <View style={styles.navigationContainer}>
       <TouchableOpacity onPress={onPrevious} style={styles.arrowButton}>
-        <AntDesign name="left" size={24} color="black" />
+        <AntDesign name="left" size={24} color="#002663" />
       </TouchableOpacity>
       <Text style={styles.dateText}>
         {format(currentDate, "MMMM dd, yyyy")}
       </Text>
       <TouchableOpacity onPress={onNext} style={styles.arrowButton}>
-        <AntDesign name="right" size={24} color="black" />
+        <AntDesign name="right" size={24} color="#002663" />
       </TouchableOpacity>
     </View>
   );
@@ -24,15 +24,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "90%",
-    marginVertical: 10,
+    marginVertical: 20,
+    backgroundColor: "#ffffff", // Match background color to previous pages
+    padding: 10,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 5,
   },
   arrowButton: {
-    padding: 10,
+    padding: 5,
   },
   dateText: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
+    color: "#002663", // Match font color to previous pages
   },
 });
 

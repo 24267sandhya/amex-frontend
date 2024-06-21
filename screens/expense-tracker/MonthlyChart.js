@@ -1,23 +1,14 @@
 import React, { useContext, useState, useEffect } from "react";
-import {
-  View,
-  Dimensions,
-  StyleSheet,
-  Text,
-  Button,
-  FlatList,
-  ScrollView,
-} from "react-native";
+import { View, Dimensions, StyleSheet, Text, FlatList } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { BarChart, PieChart } from "react-native-chart-kit";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ExpenseContext } from "../../context/expenseContext";
 import {
   startOfMonth,
   endOfMonth,
-  startOfWeek,
   eachWeekOfInterval,
   getWeekOfMonth,
-  isSameWeek,
   parseISO,
   isWithinInterval,
   format,
@@ -25,7 +16,6 @@ import {
   addMonths,
 } from "date-fns";
 import NavigationArrows from "./utils/NavigationArrows";
-import { Picker } from "@react-native-picker/picker";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 
@@ -73,20 +63,9 @@ const MonthlyChart = () => {
     style: {
       borderRadius: 16,
     },
-    propsForDots: {
-      r: "6",
-      strokeWidth: "2",
-      stroke: "#ffa726",
+    propsForBackgroundLines: {
+      strokeDasharray: "", // solid background lines with no dashes
     },
-  };
-
-  const handleWeekPress = (weekStart) => {
-    const currentWeekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
-    if (isSameWeek(weekStart, currentWeekStart)) {
-      navigation.navigate("WeeklyChart");
-    } else {
-      navigation.navigate("SelectedWeekChart", { weekStart });
-    }
   };
 
   const handlePreviousMonth = () => {
@@ -116,55 +95,85 @@ const MonthlyChart = () => {
     }
   };
 
-  return (
-    <>
-      <View style={styles.container}>
-        <Header heading="Expense Tracker" />
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
+  const renderHeader = () => {
+    return (
+      <View style={styles.scrollContainer}>
+        <Picker
+          selectedValue={selectedChart}
+          onValueChange={handleChartChange}
+          style={styles.picker}
+          itemStyle={styles.pickerItem}
         >
-          <Picker
-            selectedValue={selectedChart}
-            onValueChange={handleChartChange}
-            style={styles.picker}
-          >
-            <Picker.Item label="Daily" value="daily" />
-            <Picker.Item label="Weekly" value="weekly" />
-            <Picker.Item label="Monthly" value="monthly" />
-          </Picker>
+          <Picker.Item label="Daily" value="daily" />
+          <Picker.Item label="Weekly" value="weekly" />
+          <Picker.Item label="Monthly" value="monthly" />
+        </Picker>
+        <View style={styles.navigation}>
           <NavigationArrows
             onPrevious={handlePreviousMonth}
             onNext={handleNextMonth}
             currentDate={currentMonth}
           />
-          <Text style={styles.chartTitle}>
-            Monthly Expenses ({format(currentMonthStart, "MMMM yyyy")})
-          </Text>
-          <BarChart
-            data={monthlyData}
-            width={screenWidth - 40}
-            height={220}
-            chartConfig={chartConfig}
-            style={styles.chart}
-            showValuesOnTopOfBars={true}
-            withVerticalLabels={true}
-            withHorizontalLabels={false}
-          />
-          <View style={styles.buttonsRow}></View>
-          <Text style={styles.totalExpense}>Total Expense: {totalExpense}</Text>
-          <PieChart
-            data={categoryData}
-            width={screenWidth - 20}
-            height={220}
-            chartConfig={chartConfig}
-            accessor="amount"
-            backgroundColor="transparent"
-            center={[5, 0]}
-            absolute
-          />
-        </ScrollView>
+        </View>
+        <Text style={styles.chartTitle}>
+          Monthly Expenses ({format(currentMonthStart, "MMMM yyyy")})
+        </Text>
+        <BarChart
+          data={monthlyData}
+          width={screenWidth - 40}
+          height={220}
+          chartConfig={chartConfig}
+          style={styles.chart}
+          fromZero={true}
+          showValuesOnTopOfBars={true}
+          withVerticalLabels={true}
+          withHorizontalLabels={false}
+        />
+        <Text style={styles.totalExpense}>Total Expense: {totalExpense}</Text>
+        <PieChart
+          data={categoryData}
+          width={screenWidth - 20}
+          height={220}
+          chartConfig={chartConfig}
+          accessor="amount"
+          backgroundColor="transparent"
+          center={[5, 0]}
+          absolute
+        />
+      </View>
+    );
+  };
+
+  return (
+    <>
+      <View style={styles.container}>
+        <Header heading="Expense Tracker" />
+        <FlatList
+          data={currentMonthTransactions}
+          keyExtractor={(item) => item._id}
+          ListHeaderComponent={renderHeader}
+          renderItem={({ item }) => (
+            <View style={styles.transactionItem}>
+              <View style={styles.transactionDetails}>
+                <Text style={styles.merchant}>{item.merchant}</Text>
+                <Text style={styles.category}>{item.category}</Text>
+              </View>
+              <View style={styles.transactionList}>
+                <Text
+                  style={[
+                    styles.amount,
+                    item.transaction_type === "credit"
+                      ? styles.credit
+                      : styles.debit,
+                  ]}
+                >
+                  {item.transaction_type === "credit" ? "+" : "-"}
+                  {item.amount}
+                </Text>
+              </View>
+            </View>
+          )}
+        />
       </View>
       <Footer navigation={navigation} />
     </>
@@ -205,7 +214,7 @@ const processCategoryData = (transactions) => {
       .filter((transaction) => transaction.category === category)
       .reduce((sum, transaction) => sum + transaction.amount, 0);
     return {
-      name: `Rs : ${category}`,
+      name: category,
       amount: total,
       color: getColorForCategory(category),
       legendFontColor: "#7F7F7F",
@@ -229,17 +238,19 @@ const getColorForCategory = (category) => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
     flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#E1E6F9",
   },
   scrollContainer: {
-    padding: 15,
-    justifyContent: "center",
+    padding: 20,
   },
   chartTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
     marginVertical: 10,
+    color: "#555555",
   },
   chart: {
     marginVertical: 10,
@@ -249,42 +260,78 @@ const styles = StyleSheet.create({
   },
   totalExpense: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
     marginVertical: 10,
     paddingTop: 10,
+    color: "#555555",
   },
-  categoryTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
+  pieChartContainer: {
+    marginBottom: 20,
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 10,
+    width: screenWidth - 40,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  picker: {
+    width: screenWidth - 40,
     marginVertical: 10,
-  },
-  categoryItem: {
-    backgroundColor: "#f9f9f9",
-    padding: 10,
-    marginVertical: 5,
+    backgroundColor: "#f0f0f0",
     borderRadius: 5,
-    width: screenWidth - 20,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
-  buttonsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  buttonContainer: {
-    flex: 1,
-    marginHorizontal: 5,
+  pickerItem: {
+    color: "#000",
   },
   transactionItem: {
     backgroundColor: "#f9f9f9",
     padding: 10,
     marginVertical: 5,
     borderRadius: 5,
-    width: screenWidth - 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 30,
   },
-  picker: {
-    width: screenWidth - 20,
-    marginVertical: 10,
+  transactionDetails: {
+    flexDirection: "column",
+  },
+  merchant: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  category: {
+    fontSize: 14,
+    color: "#666",
+  },
+  amount: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  credit: {
+    color: "green",
+  },
+  debit: {
+    color: "red",
+  },
+  navigation: {
+    paddingRight: 20,
+  },
+  transactionList: {
+    marginRight: 20,
   },
 });
 

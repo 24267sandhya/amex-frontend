@@ -28,9 +28,10 @@ const InputBox = ({
 const styles = StyleSheet.create({
   inputBox: {
     height: 40,
+    width: 300,
     marginBottom: 20,
-    backgroundColor: "#ffffff",
-    borderRadius: 10,
+    backgroundColor: "#d3d3d3",
+    borderRadius: 5,
     marginTop: 10,
     paddingLeft: 10,
     color: "#af9f85",

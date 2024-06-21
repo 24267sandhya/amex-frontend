@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -6,8 +6,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  TextInput,
-  Button,
   ActivityIndicator,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -15,16 +13,17 @@ import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "../../context/authContext"; // Import AuthContext
 
 const ProfilePage = () => {
   const navigation = useNavigation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [profilePicture, setProfilePicture] = useState("");
-  const [password, setPassword] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [jwtToken, setJwtToken] = useState(""); // State to store the token
+  const [authState, setAuthState, logout] = useContext(AuthContext); // Get logout function from AuthContext
 
   useEffect(() => {
     const fetchTokenAndUserData = async () => {
@@ -75,31 +74,6 @@ const ProfilePage = () => {
     }
   };
 
-  const handleUpdateProfile = async () => {
-    try {
-      const response = await axios.put(
-        "http://192.168.0.5:3000/api/v1/auth/update-profile",
-        {
-          name,
-          password,
-          profilePicture,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
-          },
-        }
-      );
-
-      if (response.data.success) {
-        alert("Profile updated successfully!");
-      }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Failed to update profile");
-    }
-  };
-
   const handleUpdateProfilePicture = async () => {
     const formData = new FormData();
     formData.append("profilePicture", {
@@ -130,6 +104,11 @@ const ProfilePage = () => {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigation.navigate("Login"); // Navigate to the Login screen after logout
+  };
+
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
@@ -150,27 +129,13 @@ const ProfilePage = () => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Update Profile</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Name"
-          value={name}
-          onChangeText={setName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-        <Button title="Update Profile" onPress={handleUpdateProfile} />
-        {selectedImage && (
-          <Button
-            title="Update Profile Picture"
-            onPress={handleUpdateProfilePicture}
-          />
-        )}
+        <Text style={styles.sectionTitle}>Profile</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("UpdateProfilePage")}
+        >
+          <Text style={styles.buttonText}>Update Profile</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
@@ -192,39 +157,41 @@ const ProfilePage = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.option}
-          onPress={() => navigation.navigate("QrScanner")}
+          onPress={() => navigation.navigate("QrCodeScreen")}
         >
           <Ionicons name="qr-code-outline" size={24} color="black" />
           <Text style={styles.optionText}>Scan QR code</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => navigation.navigate("ChangePasswordScreen")}
-        >
-          <Ionicons name="lock-closed-outline" size={24} color="black" />
-          <Text style={styles.optionText}>Change password</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Support</Text>
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => navigation.navigate("ChatScreen")}
+        >
           <Ionicons name="chatbubbles-outline" size={24} color="black" />
           <Text style={styles.optionText}>Need help? Let's chat</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => navigation.navigate("FeedbackScreen")}
+        >
           <Ionicons name="create-outline" size={24} color="black" />
           <Text style={styles.optionText}>Provide your Feedback!</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => navigation.navigate("PrivacyPolicyScreen")}
+        >
           <Ionicons name="document-text-outline" size={24} color="black" />
           <Text style={styles.optionText}>Privacy Policy</Text>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.logoutButton}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Ionicons name="log-out-outline" size={24} color="red" />
         <Text style={styles.logoutText}>Log Out</Text>
       </TouchableOpacity>
@@ -270,12 +237,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
-  input: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
+  button: {
+    backgroundColor: "#016FD0",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
   },
   option: {
     flexDirection: "row",

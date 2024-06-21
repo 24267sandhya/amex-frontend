@@ -48,11 +48,10 @@ const StockApp = () => {
     setLoading(true);
     try {
       const { data } = await axios.get("/api/v1/stock/stocks");
-      console.log("Raw fetched data:", data); // Log the raw fetched data
+      // Log the raw fetched data
 
       // Adjusting date format and handling the dates
       const mostRecentDate = getMostRecentDate();
-      console.log("Most recent date:", mostRecentDate);
 
       // Converting the data from database format to the required format
       const engineeredData = featureEngineering(
@@ -62,12 +61,11 @@ const StockApp = () => {
         }))
       );
 
-      console.log("Engineered data:", engineeredData); // Log the engineered data
+      // Log the engineered data
 
       const filteredData = engineeredData.filter(
         (stock) => stock.date === mostRecentDate
       );
-      console.log("Filtered data:", filteredData);
 
       if (filteredData.length > 0) {
         setStockData(filteredData);

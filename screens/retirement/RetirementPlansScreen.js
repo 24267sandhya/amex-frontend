@@ -26,7 +26,7 @@ const RetirementPlansScreen = ({ navigation }) => {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const response = await fetch("http://192.168.0.5:3000/api/plans");
+        const response = await fetch("http://192.168.29.47:3000/api/plans");
         const data = await response.json();
         setPlans(data);
         setLoading(false);

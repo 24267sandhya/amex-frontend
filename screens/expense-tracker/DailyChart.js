@@ -41,8 +41,8 @@ const DailyChart = () => {
     .reduce((acc, transaction) => acc + transaction.amount, 0);
 
   const chartConfig = {
-    backgroundColor: "#002663", // Set the background color of the chart
-    backgroundGradientFrom: "#002663", // Set the gradient start color
+    backgroundColor: "#002663",
+    backgroundGradientFrom: "#002663",
     backgroundGradientTo: "#016fd0",
     decimalPlaces: 2,
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
@@ -51,20 +51,22 @@ const DailyChart = () => {
       borderRadius: 16,
     },
     propsForBackgroundLines: {
-      strokeDasharray: "", // solid background lines with no dashes
+      strokeDasharray: "",
     },
   };
 
   const handlePreviousDay = () => {
     const previousDay = subDays(currentDate, 1);
     setCurrentDate(previousDay);
-    navigation.navigate("DailyChart", { selectedDay: previousDay });
+    navigation.navigate("DailyChart", {
+      selectedDay: previousDay.toISOString(),
+    });
   };
 
   const handleNextDay = () => {
     const nextDay = addDays(currentDate, 1);
     setCurrentDate(nextDay);
-    navigation.navigate("DailyChart", { selectedDay: nextDay });
+    navigation.navigate("DailyChart", { selectedDay: nextDay.toISOString() });
   };
 
   const handleChartChange = (value) => {
@@ -78,51 +80,59 @@ const DailyChart = () => {
     }
   };
 
-  return (
-    <>
-      <View style={styles.container}>
-        <Header heading="Expense Tracker" />
-        <Picker
-          selectedValue={selectedChart}
-          onValueChange={handleChartChange}
-          style={styles.picker}
-          itemStyle={styles.pickerItem}
-        >
-          <Picker.Item label="Daily" value="daily" />
-          <Picker.Item label="Weekly" value="weekly" />
-          <Picker.Item label="Monthly" value="monthly" />
-        </Picker>
-
-        <NavigationArrows
-          onPrevious={handlePreviousDay}
-          onNext={handleNextDay}
-          currentDate={currentDate}
-        />
-        <Text style={styles.chartTitle}>
-          Expenses for {format(currentDate, "MMMM dd, yyyy")}
-        </Text>
-        <BarChart
-          data={dailyData}
-          width={screenWidth - 40}
-          height={220}
-          chartConfig={chartConfig}
-          style={styles.chart}
-          fromZero={true}
-          showValuesOnTopOfBars={true}
-          withVerticalLabels={true}
-          withHorizontalLabels={false}
-        />
+  const renderHeader = () => (
+    <View style={styles.headerContainer}>
+      <Picker
+        selectedValue={selectedChart}
+        onValueChange={handleChartChange}
+        style={styles.picker}
+        itemStyle={styles.pickerItem}
+      >
+        <Picker.Item label="Daily" value="daily" />
+        <Picker.Item label="Weekly" value="weekly" />
+        <Picker.Item label="Monthly" value="monthly" />
+      </Picker>
+      <NavigationArrows
+        onPrevious={handlePreviousDay}
+        onNext={handleNextDay}
+        currentDate={currentDate}
+        style={styles.navigationArrows}
+      />
+      <Text style={styles.chartTitle}>
+        Expenses for {format(currentDate, "MMMM dd, yyyy")}
+      </Text>
+      <BarChart
+        data={dailyData}
+        width={screenWidth - 40}
+        height={220}
+        chartConfig={chartConfig}
+        style={styles.chart}
+        fromZero={true}
+        showValuesOnTopOfBars={true}
+        withVerticalLabels={true}
+        withHorizontalLabels={false}
+      />
+      <View style={styles.addButtonContainer}>
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => navigation.navigate("AddTransaction")}
         >
           <Ionicons name="add" size={24} color="white" />
         </TouchableOpacity>
-        <Text style={styles.totalExpense}>Total Expense: {totalExpense}</Text>
-        <Text style={styles.transactionTitle}>Transactions</Text>
+      </View>
+      <Text style={styles.totalExpense}>Total Expense: {totalExpense}</Text>
+      <Text style={styles.transactionTitle}>Transactions</Text>
+    </View>
+  );
+
+  return (
+    <>
+      <View style={styles.container}>
+        <Header heading="Expense Tracker" />
         <FlatList
           data={dailyTransactions}
           keyExtractor={(item) => item._id}
+          ListHeaderComponent={renderHeader}
           renderItem={({ item }) => (
             <View style={styles.transactionItem}>
               <View style={styles.transactionDetails}>
@@ -179,12 +189,16 @@ const processData = (transactions, currentDate) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
+    backgroundColor: "#E1E6F9",
+  },
+  headerContainer: {
+    padding: 20,
   },
   chartTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
     marginVertical: 10,
+    color: "#555555",
   },
   chart: {
     marginVertical: 10,
@@ -192,25 +206,47 @@ const styles = StyleSheet.create({
     padding: 5,
     paddingRight: 0,
   },
+  addButtonContainer: {
+    alignItems: "flex-end",
+    marginTop: 5,
+  },
+  addButton: {
+    backgroundColor: "#1e90ff",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
   totalExpense: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
     marginVertical: 10,
     paddingTop: 10,
+    color: "#555555",
   },
   transactionTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginVertical: 10,
+    color: "#808080",
   },
   transactionItem: {
     backgroundColor: "#f9f9f9",
     padding: 10,
     marginVertical: 5,
     borderRadius: 5,
-    width: screenWidth - 40,
     flexDirection: "row",
     justifyContent: "space-between",
+    marginHorizontal: 10,
   },
   transactionDetails: {
     flexDirection: "column",
@@ -233,16 +269,11 @@ const styles = StyleSheet.create({
   debit: {
     color: "red",
   },
-  addButton: {
-    position: "absolute",
-    top: 330,
-    right: 20,
-    backgroundColor: "#1e90ff",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
+  picker: {
+    width: screenWidth - 40,
+    marginVertical: 10,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 5,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: {
@@ -252,22 +283,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  picker: {
-    width: screenWidth - 20,
-    marginVertical: 10,
-    backgroundColor: "#f0f0f0", // Add a light background color for contrast
-    borderRadius: 5, // Rounded corners
-    elevation: 5, // Shadow
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
   pickerItem: {
-    color: "#000", // Text color for better contrast
+    color: "#000",
+  },
+  navigationArrows: {
+    marginHorizontal: 20,
   },
 });
 
