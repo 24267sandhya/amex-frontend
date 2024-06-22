@@ -35,45 +35,9 @@ const Rewards = ({ navigation }) => {
 
   return (
     <>
-      <View style={{ flex: 1, backgroundColor: "#002663" }}>
+      <View style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
         <Header heading="Rewards" />
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <View style={styles.header}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("TransactionHistoryScreen")}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  paddingLeft: 10,
-                  paddingTop: 10,
-                }}
-              >
-                <Text style={{ color: "#fff" }}>History</Text>
-                <Image
-                  source={require("../../assets/goal-setter/history.png")}
-                  style={styles.headerIcon}
-                />
-              </View>
-            </TouchableOpacity>
-            <View style={styles.headerRightIcons}>
-              <TouchableOpacity>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    paddingLeft: 10,
-                    paddingTop: 10,
-                  }}
-                >
-                  <Text style={{ color: "#fff" }}>Leaderboard</Text>
-                  <Image
-                    source={require("../../assets/goal-setter/ranking (1).png")}
-                    style={styles.headerIcon}
-                  />
-                </View>
-              </TouchableOpacity>
-            </View>
-          </View>
           <View style={styles.balanceCard}>
             <Text style={styles.balanceText}>Your Balance</Text>
             <View style={styles.circleBalance}>
@@ -170,7 +134,7 @@ const Rewards = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#e6e6fa",
+    backgroundColor: "#fff",
   },
   scrollContainer: {
     alignItems: "center",
@@ -226,7 +190,7 @@ const styles = StyleSheet.create({
   balanceCard: {
     width: "85%",
     height: "30%",
-    backgroundColor: "#002663",
+    backgroundColor: "#f2f2f2",
     padding: 10,
     paddingLeft: 10,
     borderRadius: 10,
@@ -235,10 +199,11 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   balanceText: {
+    fontWeight: "700",
     marginTop: 1,
-    fontSize: 16,
+    fontSize: 27,
     padding: 10,
-    color: "#fff",
+    color: "#111",
   },
   pointsContainer: {
     backgroundColor: "#FFC15C",
@@ -266,16 +231,19 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   redeemButton: {
-    marginTop: 0.1,
+    position: "absolute",
+    marginTop: 230,
     marginLeft: 10,
+    alignItems: "center",
     backgroundColor: "#ffa500",
     paddingVertical: 10,
     paddingHorizontal: 30,
-    borderRadius: 5,
+    borderRadius: 20,
+    width: 150,
   },
   redeemText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 20,
   },
   vouchersSection: {
     width: "90%",
@@ -285,13 +253,13 @@ const styles = StyleSheet.create({
   vouchersTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#ffffff",
+    color: "#000",
   },
   vouchersSubtitle: {
     margin: 5,
     marginLeft: 20,
     fontSize: 14,
-    color: "#ffffff",
+    color: "#111",
     marginTop: 5,
   },
   vouchersContainer: {
@@ -305,7 +273,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 10,
     borderRadius: 10,
+    justifyContent: "flex-end",
     alignItems: "center",
+    borderColor: "#E0E0E0",
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 5,
   },
   voucherImage1: {
     width: 100,
@@ -340,7 +316,7 @@ const styles = StyleSheet.create({
   earnNowTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#ffffff",
+    color: "#000",
     marginTop: 20,
   },
   earnNowContainer: {
@@ -354,6 +330,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginTop: 10,
+    borderColor: "#E0E0E0",
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 5,
   },
   earnNowImage: {
     width: 50,

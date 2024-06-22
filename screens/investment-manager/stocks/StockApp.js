@@ -132,7 +132,7 @@ const StockApp = () => {
               <Text style={styles.tab}>Portfolio</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate("StockApp")}>
-              <Text style={styles.tab}>Stocks</Text>
+              <Text style={styles.selectedTab}>Stocks</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => navigation.navigate("MutualFundsPage")}
@@ -150,7 +150,7 @@ const StockApp = () => {
                 activeTab === "Top Gainers" && styles.activeSubTab,
               ]}
             >
-              Top Gainers
+              General
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: "#003366",
+    backgroundColor: "#016FD0",
   },
   headerTitle: {
     fontSize: 20,
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   tabs: {
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: "#003366",
+    backgroundColor: "#016FD0",
   },
   tab: {
     paddingVertical: 10,
@@ -217,10 +217,18 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
+  selectedTab: {
+    paddingVertical: 7,
+    paddingHorizontal: 20,
+    color: "white",
+    fontWeight: "bold",
+    borderRadius: 20,
+    backgroundColor: "#2196F3",
+  },
   subTabs: {
     flexDirection: "row",
     justifyContent: "space-around",
-    backgroundColor: "#003366",
+    backgroundColor: "#016FD0",
     paddingVertical: 10,
   },
   subTab: {
@@ -228,7 +236,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     color: "white",
     borderRadius: 20,
-    backgroundColor: "#003366",
+    backgroundColor: "#016FD0",
   },
   activeSubTab: {
     backgroundColor: "#2196F3",
@@ -238,18 +246,26 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   stockCard: {
-    backgroundColor: "#016fd0",
-    padding: 15,
+    backgroundColor: "#ffffff",
+    padding: 16,
     borderRadius: 10,
+    marginTop: 10,
     marginBottom: 10,
+    borderColor: "#E0E0E0",
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 5,
   },
   stockTitle: {
-    color: "white",
+    color: "#000",
     fontWeight: "bold",
     fontSize: 16,
   },
   stockSymbol: {
-    color: "white",
+    color: "#000",
     marginTop: 5,
   },
   gain: {

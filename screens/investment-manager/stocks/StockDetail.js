@@ -109,34 +109,6 @@ const StockDetail = () => {
     <>
       <View style={styles.container}>
         <Header heading="Stock Detail" />
-        <View style={styles.tabs}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("PortfolioPage")}
-            >
-              <Text style={styles.tab}>Portfolio</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("StockApp")}>
-              <Text style={styles.tab}>Stocks</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("MutualFundsPage")}
-            >
-              <Text style={styles.tab}>Mutual Funds</Text>
-            </TouchableOpacity>
-          </ScrollView>
-        </View>
-        <View style={styles.subTabs}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("StockApp")}
-            style={styles.subTab}
-          >
-            <Text style={styles.subTabText}>Top Gainers</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.subTab, styles.activeSubTab]}>
-            <Text style={styles.subTabText}>Recommended</Text>
-          </TouchableOpacity>
-        </View>
 
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <Text style={styles.title}>

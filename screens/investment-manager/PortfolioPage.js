@@ -194,24 +194,14 @@ const PortfolioPage = () => {
   return (
     <>
       <View style={styles.container}>
-        <Header heading="Portfolio Page" />
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => alert("Curate your own plan pressed")}
-          >
-            <Text style={styles.planButton}>Curate your own plan</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => alert("Profile pressed")}>
-            <Ionicons name="person-circle" size={30} color="#FF9800" />
-          </TouchableOpacity>
-        </View>
+        <Header heading="Portfolio" />
 
         <View style={styles.tabs}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <TouchableOpacity
               onPress={() => navigation.navigate("PortfolioPage")}
             >
-              <Text style={styles.tab}>Portfolio</Text>
+              <Text style={styles.selectedTab}>Portfolio</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate("StockApp")}>
               <Text style={styles.tab}>Stocks</Text>
@@ -222,6 +212,20 @@ const PortfolioPage = () => {
               <Text style={styles.tab}>Mutual Funds</Text>
             </TouchableOpacity>
           </ScrollView>
+        </View>
+
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => alert("Curate your own plan pressed")}
+          >
+            <Text style={styles.planButton}>Curate your own plan</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => alert("Profile pressed")}>
+            <Image
+              source={require("../../assets/chat.png")}
+              style={{ height: 30, width: 30, marginLeft: 20 }}
+            />
+          </TouchableOpacity>
         </View>
 
         {loading ? (
@@ -255,11 +259,11 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: "#003366",
+    backgroundColor: "#016FD0",
   },
   headerTitle: {
     fontSize: 20,
@@ -273,13 +277,21 @@ const styles = StyleSheet.create({
   tabs: {
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: "#003366",
+    backgroundColor: "#016FD0",
   },
   tab: {
     paddingVertical: 10,
     paddingHorizontal: 15,
     color: "white",
     fontWeight: "bold",
+  },
+  selectedTab: {
+    paddingVertical: 7,
+    paddingHorizontal: 20,
+    color: "white",
+    fontWeight: "bold",
+    borderRadius: 20,
+    backgroundColor: "#2196F3",
   },
   content: {
     padding: 20,

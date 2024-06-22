@@ -54,6 +54,7 @@ import FeedbackScreen from "./screens/homescreen/FeedbackScreen";
 import GeneralChatbot from "./screens/chatbot/GeneralChatbot";
 import CompletedGoalsScreen from "./screens/goal-setter/CompletedGoalsScreen";
 import Rewards from "./screens/goal-setter/Rewards";
+import QRCodeScannerScreen from "./screens/scan-and-pay/QrScanner";
 
 const Stack = createStackNavigator();
 
@@ -73,8 +74,8 @@ const App = () => {
           <Stack.Navigator initialRouteName="Login">
             {/* Scan and Pay */}
             <Stack.Screen
-              name="QrScanner"
-              component={QrScanner}
+              name="QrCodeScannerScreen"
+              component={QRCodeScannerScreen}
               options={{ headerShown: false }}
             />
             <Stack.Screen

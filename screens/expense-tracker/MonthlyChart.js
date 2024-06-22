@@ -152,27 +152,6 @@ const MonthlyChart = () => {
           data={currentMonthTransactions}
           keyExtractor={(item) => item._id}
           ListHeaderComponent={renderHeader}
-          renderItem={({ item }) => (
-            <View style={styles.transactionItem}>
-              <View style={styles.transactionDetails}>
-                <Text style={styles.merchant}>{item.merchant}</Text>
-                <Text style={styles.category}>{item.category}</Text>
-              </View>
-              <View style={styles.transactionList}>
-                <Text
-                  style={[
-                    styles.amount,
-                    item.transaction_type === "credit"
-                      ? styles.credit
-                      : styles.debit,
-                  ]}
-                >
-                  {item.transaction_type === "credit" ? "+" : "-"}
-                  {item.amount}
-                </Text>
-              </View>
-            </View>
-          )}
         />
       </View>
       <Footer navigation={navigation} />

@@ -1,5 +1,13 @@
 import React, { useState, useContext } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+  ScrollView,
+} from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { AuthContext } from "../../../context/authContext"; // Import the auth context to get the user token
@@ -63,30 +71,32 @@ const SellStock = () => {
     <>
       <View style={styles.container}>
         <Header heading="Sell Stock" />
-        <Text style={styles.title}>
-          Sell {stockDetails.name} ({stockDetails.symbol})
-        </Text>
-        <Text style={styles.currentValue}>
-          Current Value: ₹{stockDetails.close.toFixed(3)}
-        </Text>
-        <TextInput
-          style={styles.input}
-          value={quantity}
-          onChangeText={handleQuantityChange}
-          placeholder="Quantity"
-          keyboardType="numeric"
-        />
-        <Text style={styles.totalPrice}>
-          Total Price: ₹{totalPrice.toFixed(3)}
-        </Text>
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Password"
-          secureTextEntry
-        />
-        <Button title="Sell" onPress={handleSellPress} />
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <Text style={styles.title}>
+            Sell {stockDetails.name} ({stockDetails.symbol})
+          </Text>
+          <Text style={styles.currentValue}>
+            Current Value: ₹{stockDetails.close.toFixed(3)}
+          </Text>
+          <TextInput
+            style={styles.input}
+            value={quantity}
+            onChangeText={handleQuantityChange}
+            placeholder="Quantity"
+            keyboardType="numeric"
+          />
+          <Text style={styles.totalPrice}>
+            Total Price: ₹{totalPrice.toFixed(3)}
+          </Text>
+          <TextInput
+            style={styles.input}
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Password"
+            secureTextEntry
+          />
+          <Button title="Sell" onPress={handleSellPress} />
+        </ScrollView>
       </View>
       <Footer navigation={navigation} />
     </>
@@ -98,6 +108,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  scrollContainer: {
+    padding: 20,
   },
   title: {
     fontSize: 24,

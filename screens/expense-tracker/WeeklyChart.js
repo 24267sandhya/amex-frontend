@@ -11,6 +11,7 @@ import {
   subWeeks,
   addWeeks,
   isWithinInterval,
+  getWeek,
 } from "date-fns";
 import NavigationArrows from "./utils/NavigationArrows";
 import Footer from "../../components/Footer";
@@ -33,15 +34,15 @@ const WeeklyChart = () => {
     }
   }, [route.params]);
 
-  const startOfWeekDate = startOfWeek(currentWeek, { weekStartsOn: 1 });
-  const endOfWeekDate = addDays(startOfWeekDate, 6);
+  const currentWeekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
+  const currentWeekEnd = addDays(currentWeekStart, 6);
 
   const weeklyTransactions = transactions.filter(
     (transaction) =>
       transaction.transaction_type === "debit" &&
       isWithinInterval(new Date(transaction.transaction_date), {
-        start: startOfWeekDate,
-        end: endOfWeekDate,
+        start: currentWeekStart,
+        end: currentWeekEnd,
       })
   );
 
@@ -50,11 +51,16 @@ const WeeklyChart = () => {
     0
   );
 
-  const transactionsByMonth = splitTransactionsByMonth(weeklyTransactions);
+  const weeklyData = processWeeklyData(
+    weeklyTransactions,
+    currentWeekStart,
+    currentWeekEnd
+  );
+  const categoryData = processCategoryData(weeklyTransactions);
 
   const chartConfig = {
-    backgroundColor: "#002663", // Set the background color of the chart
-    backgroundGradientFrom: "#002663", // Set the gradient start color
+    backgroundColor: "#002663",
+    backgroundGradientFrom: "#002663",
     backgroundGradientTo: "#016fd0",
     decimalPlaces: 2,
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
@@ -63,7 +69,7 @@ const WeeklyChart = () => {
       borderRadius: 16,
     },
     propsForBackgroundLines: {
-      strokeDasharray: "", // solid background lines with no dashes
+      strokeDasharray: "",
     },
   };
 
@@ -83,21 +89,6 @@ const WeeklyChart = () => {
     });
   };
 
-  const handleDayPress = (dayIndex) => {
-    const selectedDate = addDays(startOfWeekDate, dayIndex);
-
-    if (
-      isWithinInterval(selectedDate, {
-        start: startOfWeekDate,
-        end: endOfWeekDate,
-      })
-    ) {
-      navigation.navigate("DailyChart", {
-        selectedDay: selectedDate.toISOString(),
-      });
-    }
-  };
-
   const handleChartChange = (value) => {
     setSelectedChart(value);
     if (value === "daily") {
@@ -109,41 +100,53 @@ const WeeklyChart = () => {
     }
   };
 
-  const renderHeader = () => {
-    return (
-      <View style={styles.scrollContainer}>
-        <Picker
-          selectedValue={selectedChart}
-          onValueChange={handleChartChange}
-          style={styles.picker}
-          itemStyle={styles.pickerItem}
-        >
-          <Picker.Item label="Daily" value="daily" />
-          <Picker.Item label="Weekly" value="weekly" />
-          <Picker.Item label="Monthly" value="monthly" />
-        </Picker>
+  const renderHeader = () => (
+    <View style={styles.scrollContainer}>
+      <Picker
+        selectedValue={selectedChart}
+        onValueChange={handleChartChange}
+        style={styles.picker}
+        itemStyle={styles.pickerItem}
+      >
+        <Picker.Item label="Daily" value="daily" />
+        <Picker.Item label="Weekly" value="weekly" />
+        <Picker.Item label="Monthly" value="monthly" />
+      </Picker>
+      <View style={styles.navigation}>
         <NavigationArrows
           onPrevious={handlePreviousWeek}
           onNext={handleNextWeek}
           currentDate={currentWeek}
         />
-        <Text style={styles.chartTitle}>
-          Weekly Expenses ({format(startOfWeekDate, "MMMM dd")} -{" "}
-          {format(endOfWeekDate, "MMMM dd")})
-        </Text>
-        <BarChart
-          data={weeklyData(transactions, startOfWeekDate, endOfWeekDate)}
-          width={screenWidth - 40}
-          height={220}
-          chartConfig={chartConfig}
-          style={styles.chart}
-          showValuesOnTopOfBars={true}
-          withVerticalLabels={true}
-          withHorizontalLabels={false}
-        />
       </View>
-    );
-  };
+      <Text style={styles.chartTitle}>
+        Weekly Expenses ({format(currentWeekStart, "MMMM dd")} -{" "}
+        {format(currentWeekEnd, "MMMM dd")})
+      </Text>
+      <BarChart
+        data={weeklyData}
+        width={screenWidth - 40}
+        height={220}
+        chartConfig={chartConfig}
+        style={styles.chart}
+        fromZero={true}
+        showValuesOnTopOfBars={true}
+        withVerticalLabels={true}
+        withHorizontalLabels={false}
+      />
+      <Text style={styles.totalExpense}>Total Expense: {totalExpense}</Text>
+      <PieChart
+        data={categoryData}
+        width={screenWidth - 20}
+        height={220}
+        chartConfig={chartConfig}
+        accessor="amount"
+        backgroundColor="transparent"
+        center={[5, 0]}
+        absolute
+      />
+    </View>
+  );
 
   return (
     <>
@@ -153,25 +156,6 @@ const WeeklyChart = () => {
           data={weeklyTransactions}
           keyExtractor={(item) => item._id}
           ListHeaderComponent={renderHeader}
-          renderItem={({ item }) => (
-            <View style={styles.transactionItem}>
-              <View style={styles.transactionDetails}>
-                <Text style={styles.merchant}>{item.merchant}</Text>
-                <Text style={styles.category}>{item.category}</Text>
-              </View>
-              <Text
-                style={[
-                  styles.amount,
-                  item.transaction_type === "credit"
-                    ? styles.credit
-                    : styles.debit,
-                ]}
-              >
-                {item.transaction_type === "credit" ? "+" : "-"}
-                {item.amount}
-              </Text>
-            </View>
-          )}
         />
       </View>
       <Footer navigation={navigation} />
@@ -179,23 +163,19 @@ const WeeklyChart = () => {
   );
 };
 
-const weeklyData = (transactions, startOfWeekDate, endOfWeekDate) => {
+const processWeeklyData = (transactions, startOfWeekDate, endOfWeekDate) => {
   const labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const data = [0, 0, 0, 0, 0, 0, 0];
 
-  transactions
-    .filter((transaction) => {
-      const transactionDate = new Date(transaction.transaction_date);
-      return isWithinInterval(transactionDate, {
-        start: startOfWeekDate,
-        end: endOfWeekDate,
-      });
-    })
-    .forEach((transaction) => {
-      const date = new Date(transaction.transaction_date);
+  transactions.forEach((transaction) => {
+    const date = new Date(transaction.transaction_date);
+    if (
+      isWithinInterval(date, { start: startOfWeekDate, end: endOfWeekDate })
+    ) {
       const day = date.getDay();
       data[day] += transaction.amount;
-    });
+    }
+  });
 
   return {
     labels,
@@ -208,7 +188,14 @@ const weeklyData = (transactions, startOfWeekDate, endOfWeekDate) => {
 };
 
 const processCategoryData = (transactions) => {
-  const categories = ["Food", "Grocery", "Shopping", "Bills", "Debt", "Others"];
+  const categories = [
+    "Food",
+    "Grocery",
+    "Shopping",
+    "Bills",
+    "Debts",
+    "Others",
+  ];
   const data = categories.map((category) => {
     const total = transactions
       .filter((transaction) => transaction.category === category)
@@ -230,27 +217,17 @@ const getColorForCategory = (category) => {
     Grocery: "#f5a142",
     Shopping: "#f5d142",
     Bills: "#42f54b",
-    Debt: "#4287f5",
+    Debts: "#4287f5",
     Others: "#9b42f5",
   };
   return colors[category] || "#000";
 };
 
-const splitTransactionsByMonth = (transactions) => {
-  return transactions.reduce((acc, transaction) => {
-    const transactionDate = new Date(transaction.transaction_date);
-    const month = format(transactionDate, "MMMM yyyy");
-    if (!acc[month]) {
-      acc[month] = [];
-    }
-    acc[month].push(transaction);
-    return acc;
-  }, {});
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#E1E6F9",
   },
   scrollContainer: {
@@ -258,9 +235,9 @@ const styles = StyleSheet.create({
   },
   chartTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
     marginVertical: 10,
-    color: "#003366",
+    color: "#555555",
   },
   chart: {
     marginVertical: 10,
@@ -270,17 +247,16 @@ const styles = StyleSheet.create({
   },
   totalExpense: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
     marginVertical: 10,
     paddingTop: 10,
-    color: "#003366",
+    color: "#555555",
   },
-  pieChartContainer: {
-    marginBottom: 20,
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 10,
+  picker: {
     width: screenWidth - 40,
+    marginVertical: 10,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 5,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: {
@@ -290,22 +266,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  picker: {
-    width: screenWidth - 40,
-    marginVertical: 10,
-    backgroundColor: "#f0f0f0", // Add a light background color for contrast
-    borderRadius: 5, // Rounded corners
-    elevation: 5, // Shadow
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
   pickerItem: {
-    color: "#000", // Text color for better contrast
+    color: "#000",
   },
   transactionItem: {
     backgroundColor: "#f9f9f9",
@@ -336,6 +298,9 @@ const styles = StyleSheet.create({
   },
   debit: {
     color: "red",
+  },
+  navigation: {
+    paddingRight: 20,
   },
 });
 

@@ -352,19 +352,6 @@ const MutualFundsPage = () => {
     <>
       <View style={styles.container}>
         <Header heading="Mutual Funds" />
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => alert("Curate your own plan pressed")}
-          >
-            <Text style={styles.planButton}>Curate your own plan</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => alert("Profile pressed")}>
-            <Image
-              source={require("../../../assets/chat.png")}
-              style={{ height: 30, width: 30 }}
-            />
-          </TouchableOpacity>
-        </View>
 
         <View style={styles.tabs}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -379,15 +366,19 @@ const MutualFundsPage = () => {
             <TouchableOpacity
               onPress={() => navigation.navigate("MutualFundsPage")}
             >
-              <Text style={styles.tab}>Mutual Funds</Text>
+              <Text style={styles.selectedTab}>Mutual Funds</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => alert("Profile pressed")}>
+              <Image
+                source={require("../../../assets/chat.png")}
+                style={{ height: 30, width: 30, marginLeft: 60 }}
+              />
             </TouchableOpacity>
           </ScrollView>
         </View>
         <View style={styles.subTabs}>
           <TouchableOpacity onPress={() => alert("Top Gainers pressed")}>
-            <Text style={[styles.subTab, styles.activeSubTab]}>
-              Top Gainers
-            </Text>
+            <Text style={[styles.subTab, styles.activeSubTab]}>General</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate("RecommendedMutualFundsPage")}
@@ -420,7 +411,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: "#003366",
+    backgroundColor: "#016FD0",
   },
   headerTitle: {
     fontSize: 20,
@@ -435,7 +426,15 @@ const styles = StyleSheet.create({
   tabs: {
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: "#003366",
+    backgroundColor: "#016FD0",
+  },
+  selectedTab: {
+    paddingVertical: 7,
+    paddingHorizontal: 20,
+    color: "white",
+    fontWeight: "bold",
+    borderRadius: 20,
+    backgroundColor: "#2196F3",
   },
   tab: {
     paddingVertical: 10,
@@ -446,7 +445,7 @@ const styles = StyleSheet.create({
   subTabs: {
     flexDirection: "row",
     justifyContent: "space-around",
-    backgroundColor: "#003366",
+    backgroundColor: "#016FD0",
     paddingVertical: 10,
   },
   subTab: {
@@ -454,7 +453,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     color: "white",
     borderRadius: 20,
-    backgroundColor: "#003366",
+    backgroundColor: "#016FD0",
   },
   activeSubTab: {
     backgroundColor: "#2196F3",

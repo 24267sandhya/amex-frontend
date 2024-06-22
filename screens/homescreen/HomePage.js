@@ -96,12 +96,7 @@ const HomePage = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.profileContainer}>
           <View style={styles.profileSection}>
-            <Icon
-              name="user-circle"
-              type="font-awesome"
-              size={30}
-              color="#002663"
-            />
+            <Image source={require("../../assets/home/girl.png")} />
             <View style={styles.profileTextContainer}>
               <Text style={styles.profileText}>Hello!</Text>
               <Text style={styles.profileName}>{authState.user?.name}</Text>
@@ -109,21 +104,22 @@ const HomePage = ({ navigation }) => {
           </View>
           <View style={styles.headerIcons}>
             <Icon
-              name="bell"
-              type="font-awesome-5"
-              size={24}
-              color="#002663"
-              iconStyle={styles.iconSpacing}
-              onPress={() => navigation.navigate("NotificationsScreen")}
-            />
-            <Icon
               name="qr-code"
               type="material"
-              size={24}
+              size={27}
               color="#002663"
               iconStyle={styles.iconSpacing}
-              onPress={() => navigation.navigate("QrScanner")}
+              onPress={() => navigation.navigate("QrCodeScannerScreen")}
             />
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Rewards")}
+              style={styles.iconSpacing}
+            >
+              <Image
+                source={require("../../assets/badge.png")}
+                style={styles.chatLogo}
+              />
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => navigation.navigate("GeneralChatbot")}
               style={styles.iconSpacing}
@@ -209,7 +205,7 @@ const HomePage = ({ navigation }) => {
             onPress={() => navigation.navigate("DailyChart")}
           >
             <Image
-              source={require("../../assets/home/expensetracker.png")}
+              source={require("../../assets/investment.png")}
               style={styles.gridImage}
             />
             <Text style={styles.gridText}>Expense Tracker</Text>
@@ -219,7 +215,7 @@ const HomePage = ({ navigation }) => {
             onPress={() => navigation.navigate("PortfolioPage")}
           >
             <Image
-              source={require("../../assets/home/investmentmanager.png")}
+              source={require("../../assets/home/risk.png")}
               style={styles.gridImage}
             />
             <Text style={styles.gridText}>Investment Manager</Text>
@@ -229,7 +225,7 @@ const HomePage = ({ navigation }) => {
             onPress={() => navigation.navigate("MyRetirementPlans")}
           >
             <Image
-              source={require("../../assets/home/retirementplanner.png")}
+              source={require("../../assets/home/retirement.png")}
               style={styles.gridImage}
             />
             <Text style={styles.gridText}>Retirement Planner</Text>
@@ -239,7 +235,7 @@ const HomePage = ({ navigation }) => {
             onPress={() => navigation.navigate("GoalList")}
           >
             <Image
-              source={require("../../assets/home/goalsetter.png")}
+              source={require("../../assets/home/goal.png")}
               style={styles.gridImage}
             />
             <Text style={styles.gridText}>Goal Setter</Text>
@@ -302,7 +298,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   iconSpacing: {
-    marginHorizontal: 5,
+    marginHorizontal: 7,
   },
   expenseCard: {
     height: 200,

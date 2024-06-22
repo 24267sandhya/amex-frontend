@@ -49,7 +49,7 @@ const Footer = ({ navigation }) => {
         <Text style={styles.footerText}>Retirement</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => navigation.navigate("GoalSetter")}
+        onPress={() => navigation.navigate("GoalList")}
         style={styles.footerItem}
       >
         <Icon name="bullseye" type="font-awesome-5" size={24} color="#ffffff" />

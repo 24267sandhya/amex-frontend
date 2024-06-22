@@ -164,11 +164,13 @@ const GoalListScreen = ({ navigation }) => {
         <Header heading="Goal List" />
         <View style={styles.scrollContainer}>
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Your Goals</Text>
+            <View style={styles.highlightContainer}>
+              <Text style={styles.headerTitle}>Your Goals</Text>
+            </View>
             <TouchableOpacity
               onPress={() => navigation.navigate("CompletedGoalsScreen")}
             >
-              <Text style={styles.headerSubtitle}>Completed Goals</Text>
+              <Text style={styles.headerTitle}>Completed Goals</Text>
             </TouchableOpacity>
           </View>
           <FlatList
@@ -206,8 +208,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
+    color: "#002663",
+  },
+  highlightContainer: {
+    backgroundColor: "#e6f0ff", // Light blue background
+    padding: 5,
+    borderRadius: 5,
+    elevation: 5, // Adding elevation for highlighting
   },
   headerSubtitle: {
     fontSize: 18,
@@ -215,10 +224,15 @@ const styles = StyleSheet.create({
   },
   goalCard: {
     flexDirection: "row",
-    backgroundColor: "#007AFF",
+    backgroundColor: "#BBE9FF", // Light blue background
     borderRadius: 10,
     padding: 20,
     marginBottom: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 5,
   },
   goalCardContent: {
     flex: 1,
@@ -226,15 +240,15 @@ const styles = StyleSheet.create({
   goalTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#002663",
   },
   goalSubtitle: {
     fontSize: 16,
-    color: "#fff",
+    color: "#002663",
   },
   goalDates: {
     fontSize: 14,
-    color: "#fff",
+    color: "#666",
   },
   progressBar: {
     height: 10,
@@ -248,7 +262,7 @@ const styles = StyleSheet.create({
   },
   currentAmount: {
     fontSize: 14,
-    color: "#fff",
+    color: "#002663",
   },
   goalImage: {
     width: 50,

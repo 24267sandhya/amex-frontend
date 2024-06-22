@@ -385,7 +385,7 @@ const RecommendedMutualFundsPage = () => {
             <TouchableOpacity
               onPress={() => navigation.navigate("MutualFundsPage")}
             >
-              <Text style={styles.tab}>Mutual Funds</Text>
+              <Text style={styles.selectedTab}>Mutual Funds</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -436,6 +436,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     color: "white",
     fontWeight: "bold",
+  },
+  selectedTab: {
+    paddingVertical: 7,
+    paddingHorizontal: 20,
+    color: "white",
+    fontWeight: "bold",
+    borderRadius: 20,
+    backgroundColor: "#2196F3",
   },
   subTabs: {
     flexDirection: "row",
@@ -528,7 +536,7 @@ const styles = StyleSheet.create({
     width: "40%",
     alignItems: "center",
     marginBottom: 5,
-    alignSelf: "center",
+    marginLeft: 180,
   },
   buttonText: {
     color: "white",

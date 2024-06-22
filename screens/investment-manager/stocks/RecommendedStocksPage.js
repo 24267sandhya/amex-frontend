@@ -1,16 +1,16 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
+  Image,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import axios from "axios";
-import { AuthContext } from "../../../context/authContext";
+import { useNavigation } from "@react-navigation/native";
 import Footer from "../../../components/Footer";
 import Header from "../../../components/Header";
 
@@ -18,18 +18,16 @@ const RecommendedStocksPage = () => {
   const navigation = useNavigation();
   const [recommendedStocks, setRecommendedStocks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [authState] = useContext(AuthContext);
-  const [detailsExist, setDetailsExist] = useState(false);
 
   useEffect(() => {
     fetchRecommendedStocks();
-    fetchDetailsStatus();
   }, []);
 
   const fetchRecommendedStocks = async () => {
     setLoading(true);
     try {
       const { data } = await axios.get("/api/v1/stock/recommended");
+      console.log("Recommended stocks data:", data); // Log the fetched data
       setRecommendedStocks(data);
     } catch (error) {
       console.error("Error fetching recommended stocks:", error);
@@ -37,60 +35,39 @@ const RecommendedStocksPage = () => {
     setLoading(false);
   };
 
-  const fetchDetailsStatus = async () => {
-    try {
-      const { data } = await axios.get("/api/v1/auth/check-details", {
-        headers: {
-          Authorization: `Bearer ${authState.token}`,
-        },
-      });
-      setDetailsExist(data.detailsExist);
-    } catch (error) {
-      console.error("Error checking details:", error);
-      Alert.alert("Error", "Failed to check details");
-    }
-  };
-
-  const handleBuyPress = (stock) => {
-    if (detailsExist) {
-      navigation.navigate("BuyStock", { stock });
-    } else {
-      navigation.navigate("UserDetailsForm");
-    }
-  };
-
-  const renderStockCard = (stock) => {
-    const gainLossStyle = stock.dailyReturn >= 0 ? styles.gain : styles.loss;
-    const gainLossSign = stock.dailyReturn >= 0 ? "+" : "";
+  const renderStockData = (data) => {
+    const gainLossStyle = data.dailyReturn >= 0 ? styles.gain : styles.loss;
+    const gainLossSign = data.dailyReturn >= 0 ? "+" : "";
 
     return (
-      <View key={stock.symbol} style={styles.card}>
-        <View style={styles.cardHeader}>
-          <View style={styles.cardInfo}>
-            <Text style={styles.stockName}>{stock.name}</Text>
-            <Text style={styles.stockSymbol}>{stock.symbol}</Text>
-            <Text style={styles.currentValue}>
-              Current Value: ₹{stock.currentValue.toFixed(3)}
-            </Text>
-            <Text style={[styles.dailyReturn, gainLossStyle]}>
-              Daily Return: {gainLossSign}₹{stock.dailyReturn.toFixed(3)}
-            </Text>
-          </View>
-        </View>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => handleBuyPress(stock)}
-        >
-          <Text style={styles.buttonText}>Buy</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        key={data.symbol}
+        style={styles.stockCard}
+        onPress={() =>
+          navigation.navigate("StockDetail", {
+            stock: data,
+            date: data.mostRecentDetails.date,
+          })
+        }
+      >
+        <Text style={styles.stockTitle}>{data.name}</Text>
+        <Text style={styles.stockSymbol}>{data.symbol}</Text>
+        <Text>Current Value: ₹{data.currentValue.toFixed(3)}</Text>
+        <Text style={gainLossStyle}>
+          Daily Return: {gainLossSign}₹{data.dailyReturn.toFixed(3)}
+        </Text>
+      </TouchableOpacity>
     );
+  };
+
+  const handlePress = () => {
+    alert("Footer icon pressed");
   };
 
   return (
     <>
       <View style={styles.container}>
-        <Header heading="Recommended Stocks" />
+        <Header heading="Stocks" />
         <View style={styles.tabs}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <TouchableOpacity
@@ -99,7 +76,7 @@ const RecommendedStocksPage = () => {
               <Text style={styles.tab}>Portfolio</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate("StockApp")}>
-              <Text style={styles.tab}>Stocks</Text>
+              <Text style={styles.selectedTab}>Stocks</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => navigation.navigate("MutualFundsPage")}
@@ -108,24 +85,23 @@ const RecommendedStocksPage = () => {
             </TouchableOpacity>
           </ScrollView>
         </View>
+
         <View style={styles.subTabs}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("StockApp")}
-            style={styles.subTab}
-          >
-            <Text style={styles.subTabText}>Top Gainers</Text>
+          <TouchableOpacity onPress={() => navigation.navigate("StockApp")}>
+            <Text style={styles.subTab}>General</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.subTab, styles.activeSubTab]}>
-            <Text style={styles.subTabText}>Recommended</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("RecommendedStocksPage")}
+          >
+            <Text style={styles.selectedTab}>Recommended</Text>
           </TouchableOpacity>
         </View>
-
         {loading ? (
-          <ActivityIndicator size="large" color="#016FD0" />
+          <ActivityIndicator size="large" color="#0000ff" />
         ) : (
-          <ScrollView contentContainerStyle={styles.scrollView}>
+          <ScrollView contentContainerStyle={styles.stockContainer}>
             {recommendedStocks.length > 0 ? (
-              recommendedStocks.map(renderStockCard)
+              recommendedStocks.map(renderStockData)
             ) : (
               <Text style={styles.noDataText}>No data available.</Text>
             )}
@@ -140,7 +116,46 @@ const RecommendedStocksPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#E1E6F9",
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    backgroundColor: "#003366",
+  },
+  headerTitle: {
+    fontSize: 20,
+    color: "white",
+    fontWeight: "bold",
+  },
+  stockContainer: {
+    padding: 20,
+  },
+  stockCard: {
+    backgroundColor: "#ffffff",
+    padding: 16,
+    borderRadius: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    borderColor: "#E0E0E0",
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 5,
+  },
+  stockTitle: {
+    color: "#000",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  stockSymbol: {
+    color: "#000",
+    marginTop: 5,
   },
   tabs: {
     flexDirection: "row",
@@ -152,6 +167,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     color: "white",
     fontWeight: "bold",
+  },
+  selectedTab: {
+    paddingVertical: 7,
+    paddingHorizontal: 20,
+    color: "white",
+    fontWeight: "bold",
+    borderRadius: 20,
+    backgroundColor: "#2196F3",
   },
   subTabs: {
     flexDirection: "row",
@@ -166,75 +189,41 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: "#016FD0",
   },
-  activeSubTab: {
-    backgroundColor: "#2196F3",
-    color: "white",
-  },
-  scrollView: {
-    paddingHorizontal: 16,
-  },
-  card: {
-    backgroundColor: "#ffffff",
-    padding: 16,
-    borderRadius: 10,
-    marginTop: 10,
-    marginBottom: 10,
-    borderColor: "#E0E0E0",
-    borderWidth: 1,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
-    elevation: 5,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  cardInfo: {
-    flex: 1,
-  },
-  stockName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333333",
-  },
-  stockSymbol: {
-    fontSize: 14,
-    color: "#666666",
-  },
-  currentValue: {
-    fontSize: 14,
-    color: "#666666",
-  },
-  dailyReturn: {
-    fontSize: 14,
-    marginTop: 5,
-  },
   gain: {
     color: "#39FF14",
+    marginTop: 5,
   },
   loss: {
     color: "red",
-  },
-  button: {
-    backgroundColor: "#016FD0",
-    padding: 10,
-    borderRadius: 25,
-    width: "40%",
-    alignItems: "center",
-    marginBottom: 5,
-    alignSelf: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
+    marginTop: 5,
   },
   noDataText: {
     textAlign: "center",
     marginTop: 20,
     fontSize: 16,
-    color: "#FF0000",
+    color: "red",
+  },
+  footer: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    height: 70,
+    backgroundColor: "#fff",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    borderTopWidth: 1,
+    borderColor: "#ccc",
+  },
+  touchableOpacity: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  footerIcon: {
+    width: 30,
+    height: 30,
   },
 });
 
