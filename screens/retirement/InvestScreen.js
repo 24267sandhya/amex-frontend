@@ -26,7 +26,7 @@ const InvestScreen = ({ route, navigation }) => {
   }
 
   const handleUpdate = () => {
-    fetch("http://192.168.29.47:3000/api/update-investment", {
+    fetch("http://192.168.0.5:3000/api/update-investment", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

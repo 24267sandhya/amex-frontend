@@ -216,11 +216,13 @@ const PortfolioPage = () => {
 
         <View style={styles.header}>
           <TouchableOpacity
-            onPress={() => alert("Curate your own plan pressed")}
+            onPress={() => navigation.navigate("InvestmentChatbot")}
           >
             <Text style={styles.planButton}>Curate your own plan</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => alert("Profile pressed")}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("InvestmentChatbot")}
+          >
             <Image
               source={require("../../assets/chat.png")}
               style={{ height: 30, width: 30, marginLeft: 20 }}

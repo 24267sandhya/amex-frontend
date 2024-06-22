@@ -24,10 +24,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginVertical: 20,
+    marginVertical: 5,
     backgroundColor: "#ffffff", // Match background color to previous pages
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 5,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 10,

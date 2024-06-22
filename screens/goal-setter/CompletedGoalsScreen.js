@@ -92,8 +92,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 18,
+    fontWeight: "450",
     color: "#002663",
   },
   highlightContainer: {

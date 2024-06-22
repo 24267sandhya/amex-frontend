@@ -55,6 +55,8 @@ import GeneralChatbot from "./screens/chatbot/GeneralChatbot";
 import CompletedGoalsScreen from "./screens/goal-setter/CompletedGoalsScreen";
 import Rewards from "./screens/goal-setter/Rewards";
 import QRCodeScannerScreen from "./screens/scan-and-pay/QrScanner";
+import InvestmentChatbot from "./screens/chatbot/InvestmentChatbot";
+import RetirementChatbot from "./screens/chatbot/RetirementChatbot";
 
 const Stack = createStackNavigator();
 
@@ -145,6 +147,16 @@ const App = () => {
             <Stack.Screen
               name="GeneralChatbot"
               component={GeneralChatbot}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="InvestmentChatbot"
+              component={InvestmentChatbot}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="RetirementChatbot"
+              component={RetirementChatbot}
               options={{ headerShown: false }}
             />
 

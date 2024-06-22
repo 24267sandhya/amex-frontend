@@ -1,10 +1,13 @@
 import React from "react";
 import { View, Text, Button, StyleSheet, Alert } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
+import axios from "axios"; // Assuming you're using axios for HTTP requests
+import { AuthContext } from "../../context/authContext"; // Assuming you have an AuthContext for authentication
 
 const QRCodeScannerScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = React.useState(null);
   const [scanned, setScanned] = React.useState(false);
+  const [authState] = React.useContext(AuthContext); // Getting authentication state
 
   React.useEffect(() => {
     (async () => {
@@ -13,15 +16,30 @@ const QRCodeScannerScreen = ({ navigation }) => {
     })();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
-    Alert.alert("QR Code Scanned", data, [
-      {
-        text: "OK",
-        onPress: () =>
-          navigation.navigate("TransactionPrompt", { recipientId: data }),
-      },
-    ]);
+
+    try {
+      // Fetch the user details using the recipientId
+      const response = await axios.get(`/api/v1/auth/${data}`, {
+        headers: {
+          Authorization: `Bearer ${authState.token}`,
+        },
+      });
+
+      const user = response.data.user;
+
+      Alert.alert("Pay To", `${user.name}`, [
+        {
+          text: "OK",
+          onPress: () =>
+            navigation.navigate("TransactionPrompt", { recipientId: data }),
+        },
+      ]);
+    } catch (error) {
+      Alert.alert("Error", "Failed to fetch user details");
+      console.error("Error fetching user details:", error);
+    }
   };
 
   if (hasPermission === null) {

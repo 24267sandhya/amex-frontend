@@ -110,7 +110,7 @@ const GoalSetterScreen = ({ navigation }) => {
           )}
           <TextInput
             style={styles.input}
-            placeholder="Amount"
+            placeholder="Set Limit Amount"
             keyboardType="numeric"
             value={amount}
             onChangeText={setAmount}

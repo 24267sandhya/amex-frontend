@@ -33,9 +33,11 @@ const DailyChart = () => {
   }, [route.params]);
 
   const dailyData = processData(transactions, currentDate);
-  const dailyTransactions = transactions.filter((t) =>
-    isSameDay(new Date(t.transaction_date), currentDate)
-  );
+  const dailyTransactions = transactions
+    .filter((t) => isSameDay(new Date(t.transaction_date), currentDate))
+    .sort(
+      (a, b) => new Date(b.transaction_date) - new Date(a.transaction_date)
+    );
   const totalExpense = dailyTransactions
     .filter((t) => t.transaction_type === "debit")
     .reduce((acc, transaction) => acc + transaction.amount, 0);
@@ -113,6 +115,7 @@ const DailyChart = () => {
         withHorizontalLabels={false}
       />
       <View style={styles.addButtonContainer}>
+        <Text style={styles.totalExpense}>Total Expense: {totalExpense}</Text>
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => navigation.navigate("AddTransaction")}
@@ -120,7 +123,7 @@ const DailyChart = () => {
           <Ionicons name="add" size={24} color="white" />
         </TouchableOpacity>
       </View>
-      <Text style={styles.totalExpense}>Total Expense: {totalExpense}</Text>
+
       <Text style={styles.transactionTitle}>Transactions</Text>
     </View>
   );
@@ -201,12 +204,13 @@ const styles = StyleSheet.create({
     color: "#555555",
   },
   chart: {
-    marginVertical: 10,
     borderRadius: 16,
     padding: 5,
-    paddingRight: 0,
+    paddingRight: 1,
   },
   addButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "flex-end",
     marginTop: 5,
   },
@@ -236,13 +240,12 @@ const styles = StyleSheet.create({
   transactionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginVertical: 10,
     color: "#808080",
   },
   transactionItem: {
     backgroundColor: "#f9f9f9",
     padding: 10,
-    marginVertical: 5,
+    marginVertical: 3,
     borderRadius: 5,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -271,7 +274,6 @@ const styles = StyleSheet.create({
   },
   picker: {
     width: screenWidth - 40,
-    marginVertical: 10,
     backgroundColor: "#f0f0f0",
     borderRadius: 5,
     elevation: 5,

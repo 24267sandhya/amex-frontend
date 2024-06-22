@@ -6,15 +6,19 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
+  ScrollView,
 } from "react-native";
 import axios from "axios";
 import { AuthContext } from "../../context/authContext";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
+import CustomAlert from "../../components/customAlert";
 
 const GoalListScreen = ({ navigation }) => {
   const [goals, setGoals] = useState([]);
   const [authState] = useContext(AuthContext);
+  const [isAlertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
     fetchGoals();
@@ -119,6 +123,7 @@ const GoalListScreen = ({ navigation }) => {
               },
             ]
           );
+
           // Remove the completed goal from the current goals list
           setGoals(goals.filter((g) => g._id !== g._id));
         }
@@ -178,15 +183,20 @@ const GoalListScreen = ({ navigation }) => {
             renderItem={renderItem}
             keyExtractor={(item) => item._id.toString()}
           />
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => navigation.navigate("GoalSetter")}
-          >
-            <Text style={styles.addButtonText}>+</Text>
-          </TouchableOpacity>
         </View>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => navigation.navigate("GoalSetter")}
+        >
+          <Text style={styles.addButtonText}>+</Text>
+        </TouchableOpacity>
       </View>
       <Footer navigation={navigation} />
+      <CustomAlert
+        isVisible={isAlertVisible}
+        onClose={() => setAlertVisible(false)}
+        message={alertMessage}
+      />
     </>
   );
 };
@@ -197,9 +207,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   scrollContainer: {
-    flex: 1,
     padding: 20,
-    paddingBottom: 80, // Add padding to ensure content is not hidden behind the footer
   },
   header: {
     flexDirection: "row",
@@ -208,8 +216,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 18,
+    fontWeight: "450",
     color: "#002663",
   },
   highlightContainer: {
@@ -221,6 +229,16 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     fontSize: 18,
     color: "#007AFF",
+  },
+  progressBar: {
+    height: 5,
+    borderRadius: 5,
+    backgroundColor: "#ccc",
+    marginVertical: 10,
+  },
+  progress: {
+    height: "100%",
+    borderRadius: 5,
   },
   goalCard: {
     flexDirection: "row",
@@ -249,16 +267,6 @@ const styles = StyleSheet.create({
   goalDates: {
     fontSize: 14,
     color: "#666",
-  },
-  progressBar: {
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#ccc",
-    marginVertical: 10,
-  },
-  progress: {
-    height: "100%",
-    borderRadius: 5,
   },
   currentAmount: {
     fontSize: 14,

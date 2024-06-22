@@ -84,11 +84,11 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "500",
     marginTop: 10,
   },
   value: {
-    fontSize: 16,
+    fontSize: 15,
     marginBottom: 10,
   },
   description: {

@@ -26,7 +26,7 @@ const RetirementPlansScreen = ({ navigation }) => {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const response = await fetch("http://192.168.29.47:3000/api/plans");
+        const response = await fetch("http://192.168.0.5:3000/api/plans");
         const data = await response.json();
         setPlans(data);
         setLoading(false);
@@ -115,13 +115,14 @@ const RetirementPlansScreen = ({ navigation }) => {
             >
               <Text style={styles.curateButtonText}>Curate your own plan</Text>
             </TouchableOpacity>
-            <Icon
-              name="robot"
-              type="font-awesome-5"
-              size={30}
-              color="#517fa4"
-              containerStyle={styles.robotIcon}
-            />
+            <TouchableOpacity
+              onPress={() => navigation.navigate("RetirementChatbot")}
+            >
+              <Image
+                source={require("../../assets/chat.png")}
+                style={{ height: 30, width: 30, marginLeft: 20 }}
+              />
+            </TouchableOpacity>
           </View>
           <View style={styles.exploreContainer}>
             <TouchableOpacity
@@ -311,15 +312,17 @@ const styles = StyleSheet.create({
     borderTopColor: "#dedede",
   },
   detailsButton: {
+    width: 80,
     backgroundColor: "#1a75ff",
     paddingVertical: 5,
-    paddingHorizontal: 10,
     borderRadius: 10,
     marginTop: 10,
   },
   detailsButtonText: {
+    fontSize: 15,
     color: "#fff",
-    fontWeight: "bold",
+    marginLeft: 10,
+    fontWeight: "semibold",
   },
 });
 

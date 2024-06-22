@@ -91,159 +91,163 @@ const HomePage = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Header heading="TrackMudra" />
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.profileContainer}>
-          <View style={styles.profileSection}>
-            <Image source={require("../../assets/home/girl.png")} />
-            <View style={styles.profileTextContainer}>
-              <Text style={styles.profileText}>Hello!</Text>
-              <Text style={styles.profileName}>{authState.user?.name}</Text>
+    <>
+      <View style={styles.container}>
+        <Header heading="TrackMudra" />
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.profileContainer}>
+            <View style={styles.profileSection}>
+              <Image source={require("../../assets/home/girl.png")} />
+              <View style={styles.profileTextContainer}>
+                <Text style={styles.profileText}>Hello!</Text>
+                <Text style={styles.profileName}>{authState.user?.name}</Text>
+              </View>
+            </View>
+            <View style={styles.headerIcons}>
+              <Icon
+                name="qr-code"
+                type="material"
+                size={27}
+                color="#002663"
+                iconStyle={styles.iconSpacing}
+                onPress={() => navigation.navigate("QrCodeScannerScreen")}
+              />
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Rewards")}
+                style={styles.iconSpacing}
+              >
+                <Image
+                  source={require("../../assets/badge.png")}
+                  style={styles.chatLogo}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("GeneralChatbot")}
+                style={styles.iconSpacing}
+              >
+                <Image
+                  source={require("../../assets/chat.png")}
+                  style={styles.chatLogo}
+                />
+              </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.headerIcons}>
-            <Icon
-              name="qr-code"
-              type="material"
-              size={27}
-              color="#002663"
-              iconStyle={styles.iconSpacing}
-              onPress={() => navigation.navigate("QrCodeScannerScreen")}
-            />
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Rewards")}
-              style={styles.iconSpacing}
-            >
+          <TouchableOpacity onPress={() => navigation.navigate("DailyChart")}>
+            <View style={styles.expenseCard}>
+              <View style={styles.expenseCardContent}>
+                <Text style={styles.expenseCardTitle}>Budget</Text>
+                <Text style={styles.currentAmount}>₹{totalIncome}</Text>
+                <Text style={styles.expenseCardTitle}>Total Expense</Text>
+                <Text style={styles.expenseAmount}>-₹{expense}</Text>
+                <Text style={styles.currentValue}>Current Balance</Text>
+                <Text style={styles.currentAmount}>₹{balance}</Text>
+              </View>
               <Image
-                source={require("../../assets/badge.png")}
-                style={styles.chatLogo}
+                source={require("../../assets/golden-tree.png")}
+                style={styles.expenseImage}
               />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("GeneralChatbot")}
-              style={styles.iconSpacing}
-            >
-              <Image
-                source={require("../../assets/chat.png")}
-                style={styles.chatLogo}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-        <TouchableOpacity onPress={() => navigation.navigate("DailyChart")}>
-          <View style={styles.expenseCard}>
-            <View style={styles.expenseCardContent}>
-              <Text style={styles.expenseCardTitle}>Total Expense</Text>
-              <Text style={styles.expenseAmount}>-₹{expense}</Text>
-              <Text style={styles.currentValue}>Current Balance</Text>
-              <Text style={styles.currentAmount}>₹{balance}</Text>
             </View>
-            <Image
-              source={require("../../assets/golden-tree.png")}
-              style={styles.expenseImage}
-            />
-          </View>
-        </TouchableOpacity>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.horizontalScrollContainer}
-        >
-          <View style={styles.circleSection}>
+          </TouchableOpacity>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScrollContainer}
+          >
+            <View style={styles.circleSection}>
+              <TouchableOpacity
+                style={styles.circleItem}
+                onPress={() => navigation.navigate("Video")}
+              >
+                <Image
+                  source={require("../../assets/influencerr.png")}
+                  style={styles.circleImage}
+                />
+              </TouchableOpacity>
+              <Text style={styles.circleText}>FinCrisps</Text>
+            </View>
+            <View style={styles.circleSection}>
+              <TouchableOpacity
+                style={styles.circleItem}
+                onPress={() => navigation.navigate("News")}
+              >
+                <Image
+                  source={require("../../assets/home/news.png")}
+                  style={styles.circleImage}
+                />
+              </TouchableOpacity>
+              <Text style={styles.circleText}>News</Text>
+            </View>
+            <View style={styles.circleSection}>
+              <TouchableOpacity
+                style={styles.circleItem}
+                onPress={() => navigation.navigate("Events")}
+              >
+                <Image
+                  source={require("../../assets/events/event5.png")}
+                  style={styles.circleImage}
+                />
+              </TouchableOpacity>
+              <Text style={styles.circleText}>Events</Text>
+            </View>
+            <View style={styles.circleSection}>
+              <TouchableOpacity
+                style={styles.circleItem}
+                onPress={() => navigation.navigate("Schemes")}
+              >
+                <Image
+                  source={require("../../assets/home/schemes.png")}
+                  style={styles.circleImage}
+                />
+              </TouchableOpacity>
+              <Text style={styles.circleText}>Schemes</Text>
+            </View>
+          </ScrollView>
+          <View style={styles.gridContainer}>
             <TouchableOpacity
-              style={styles.circleItem}
-              onPress={() => navigation.navigate("Video")}
+              style={styles.gridItem}
+              onPress={() => navigation.navigate("DailyChart")}
             >
               <Image
-                source={require("../../assets/influencerr.png")}
-                style={styles.circleImage}
+                source={require("../../assets/investment.png")}
+                style={styles.gridImage}
               />
+              <Text style={styles.gridText}>Expense Tracker</Text>
             </TouchableOpacity>
-            <Text style={styles.circleText}>FinCrisps</Text>
-          </View>
-          <View style={styles.circleSection}>
             <TouchableOpacity
-              style={styles.circleItem}
-              onPress={() => navigation.navigate("News")}
+              style={styles.gridItem}
+              onPress={() => navigation.navigate("PortfolioPage")}
             >
               <Image
-                source={require("../../assets/home/news.png")}
-                style={styles.circleImage}
+                source={require("../../assets/home/risk.png")}
+                style={styles.gridImage}
               />
+              <Text style={styles.gridText}>Investment Manager</Text>
             </TouchableOpacity>
-            <Text style={styles.circleText}>News</Text>
-          </View>
-          <View style={styles.circleSection}>
             <TouchableOpacity
-              style={styles.circleItem}
-              onPress={() => navigation.navigate("Events")}
+              style={styles.gridItem}
+              onPress={() => navigation.navigate("MyRetirementPlans")}
             >
               <Image
-                source={require("../../assets/events/event5.png")}
-                style={styles.circleImage}
+                source={require("../../assets/home/retirement.png")}
+                style={styles.gridImage}
               />
+              <Text style={styles.gridText}>Retirement Planner</Text>
             </TouchableOpacity>
-            <Text style={styles.circleText}>Events</Text>
-          </View>
-          <View style={styles.circleSection}>
             <TouchableOpacity
-              style={styles.circleItem}
-              onPress={() => navigation.navigate("Schemes")}
+              style={styles.gridItem}
+              onPress={() => navigation.navigate("GoalList")}
             >
               <Image
-                source={require("../../assets/home/schemes.png")}
-                style={styles.circleImage}
+                source={require("../../assets/home/goal.png")}
+                style={styles.gridImage}
               />
+              <Text style={styles.gridText}>Goal Setter</Text>
             </TouchableOpacity>
-            <Text style={styles.circleText}>Schemes</Text>
           </View>
         </ScrollView>
-        <View style={styles.gridContainer}>
-          <TouchableOpacity
-            style={styles.gridItem}
-            onPress={() => navigation.navigate("DailyChart")}
-          >
-            <Image
-              source={require("../../assets/investment.png")}
-              style={styles.gridImage}
-            />
-            <Text style={styles.gridText}>Expense Tracker</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.gridItem}
-            onPress={() => navigation.navigate("PortfolioPage")}
-          >
-            <Image
-              source={require("../../assets/home/risk.png")}
-              style={styles.gridImage}
-            />
-            <Text style={styles.gridText}>Investment Manager</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.gridItem}
-            onPress={() => navigation.navigate("MyRetirementPlans")}
-          >
-            <Image
-              source={require("../../assets/home/retirement.png")}
-              style={styles.gridImage}
-            />
-            <Text style={styles.gridText}>Retirement Planner</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.gridItem}
-            onPress={() => navigation.navigate("GoalList")}
-          >
-            <Image
-              source={require("../../assets/home/goal.png")}
-              style={styles.gridImage}
-            />
-            <Text style={styles.gridText}>Goal Setter</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-      <Footer navigation={navigation} />
-    </View>
+        <Footer navigation={navigation} />
+      </View>
+    </>
   );
 };
 

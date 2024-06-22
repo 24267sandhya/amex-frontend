@@ -1,10 +1,11 @@
+// GeneralChatbot.js
 import { View } from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
 import { GiftedChat } from "react-native-gifted-chat";
-import GlobalAPI from "../../services/GlobalAPI";
+import GlobalAPI from "../../services/GlobalAPI"; // Ensure this path is correct
 
 const chatbotAvatar =
-  "https://res.cloudinary.com/dknvsbuyy/image/upload/v1685678135/chat_1_c7eda483e3.png";
+  "https://res.cloudinary.com/dkvsbuyy/image/upload/v1685678135/chat_1_c7eda483e3.png";
 
 export default function GeneralChatbot() {
   const [messages, setMessages] = useState([]);

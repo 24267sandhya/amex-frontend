@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
+  Image,
   Modal,
   Animated,
   Dimensions,
