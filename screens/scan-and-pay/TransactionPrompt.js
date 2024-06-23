@@ -12,7 +12,6 @@ import { Picker } from "@react-native-picker/picker";
 import { AuthContext } from "../../context/authContext";
 import { ExpenseContext } from "../../context/expenseContext";
 import axios from "axios";
-import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 
 const TransactionPrompt = ({ route, navigation }) => {
@@ -217,7 +216,6 @@ const TransactionPrompt = ({ route, navigation }) => {
           </TouchableOpacity>
         </ScrollView>
       </View>
-      <Footer navigation={navigation} />
     </>
   );
 };
