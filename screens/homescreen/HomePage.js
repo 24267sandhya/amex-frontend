@@ -135,7 +135,7 @@ const HomePage = ({ navigation }) => {
           <TouchableOpacity onPress={() => navigation.navigate("DailyChart")}>
             <View style={styles.expenseCard}>
               <View style={styles.expenseCardContent}>
-                <Text style={styles.expenseCardTitle}>Budget</Text>
+                <Text style={styles.budgetCardTitle}>Monthly Budget</Text>
                 <Text style={styles.currentAmount}>₹{totalIncome}</Text>
                 <Text style={styles.expenseCardTitle}>Total Expense</Text>
                 <Text style={styles.expenseAmount}>-₹{expense}</Text>
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     width: "95%",
     backgroundColor: "#ffffff",
     borderRadius: 10,
-    padding: 30,
+    padding: 20,
     margin: 10,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -322,9 +322,16 @@ const styles = StyleSheet.create({
   },
   expenseCardContent: {
     flex: 1,
+    flexDirection:'column',
   },
   expenseCardTitle: {
     color: "#555",
+    marginTop:10,
+  },
+  budgetCardTitle: {
+    color: "#555",
+    marginTop:10,
+    flexDirection:'row',
   },
   expenseAmount: {
     color: "red",

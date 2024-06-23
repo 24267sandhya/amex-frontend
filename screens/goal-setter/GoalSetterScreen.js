@@ -13,7 +13,6 @@ import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import axios from "axios";
 import { AuthContext } from "../../context/authContext";
-import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 
 const GoalSetterScreen = ({ navigation }) => {
@@ -138,7 +137,6 @@ const GoalSetterScreen = ({ navigation }) => {
           <Button title="Done" color="#007AFF" onPress={handleDone} />
         </ScrollView>
       </View>
-      <Footer navigation={navigation} />
     </>
   );
 };

@@ -1,8 +1,8 @@
 // cronJobs.js
 
 const cron = require("node-cron");
-const User = require("../../backend/models/userModel"); // Adjust the path as necessary
-const Stock = require("../../backend/models/stockModel"); // Adjust the path as necessary
+const User = require("../../amex-backend/models/userModel"); // Adjust the path as necessary
+const Stock = require("../../amex-backend/models/stockModel"); // Adjust the path as necessary
 const moment = require("moment");
 
 const getMostRecentDate = () => {

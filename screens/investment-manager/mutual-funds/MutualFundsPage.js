@@ -368,12 +368,6 @@ const MutualFundsPage = () => {
             >
               <Text style={styles.selectedTab}>Mutual Funds</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => alert("Profile pressed")}>
-              <Image
-                source={require("../../../assets/chat.png")}
-                style={{ height: 30, width: 30, marginLeft: 60 }}
-              />
-            </TouchableOpacity>
           </ScrollView>
         </View>
         <View style={styles.subTabs}>

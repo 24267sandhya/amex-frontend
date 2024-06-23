@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { AuthContext } from "../../../context/authContext";
 import axios from "axios";
-import Footer from "../../../components/Footer";
+
 import Header from "../../../components/Header";
 
 const AddIncome = ({ navigation }) => {
@@ -74,7 +74,6 @@ const AddIncome = ({ navigation }) => {
           </TouchableOpacity>
         </ScrollView>
       </View>
-      <Footer navigation={navigation} />
     </>
   );
 };

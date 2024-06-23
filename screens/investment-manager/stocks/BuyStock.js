@@ -12,7 +12,7 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { AuthContext } from "../../../context/authContext";
 import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
+
 
 const BuyStock = () => {
   const route = useRoute();
@@ -105,7 +105,6 @@ const BuyStock = () => {
           </TouchableOpacity>
         </ScrollView>
       </View>
-      <Footer navigation={navigation} />
     </>
   );
 };

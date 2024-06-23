@@ -10,7 +10,7 @@ import {
   Image,
 } from "react-native";
 import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+
 
 const InvestScreen = ({ route, navigation }) => {
   const { plan } = route.params;
@@ -26,7 +26,7 @@ const InvestScreen = ({ route, navigation }) => {
   }
 
   const handleUpdate = () => {
-    fetch("http://192.168.0.5:3000/api/update-investment", {
+    fetch("https://amex-backend.onrender.com/api/update-investment", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -92,7 +92,6 @@ const InvestScreen = ({ route, navigation }) => {
           </TouchableOpacity>
         </ScrollView>
       </View>
-      <Footer navigation={navigation} />
     </>
   );
 };

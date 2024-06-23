@@ -12,7 +12,7 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { AuthContext } from "../../../context/authContext"; // Import the auth context to get the user token
 import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
+
 
 const SellStock = () => {
   const route = useRoute();
@@ -98,7 +98,6 @@ const SellStock = () => {
           <Button title="Sell" onPress={handleSellPress} />
         </ScrollView>
       </View>
-      <Footer navigation={navigation} />
     </>
   );
 };

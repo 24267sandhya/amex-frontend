@@ -12,7 +12,7 @@ import axios from "axios";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../../../context/authContext";
 import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
+
 
 const SellFundsScreen = () => {
   const route = useRoute();
@@ -75,7 +75,6 @@ const SellFundsScreen = () => {
           <Button title="Sell" onPress={handleSellPress} color="#016FD0" />
         </ScrollView>
       </View>
-      <Footer navigation={navigation} />
     </>
   );
 };

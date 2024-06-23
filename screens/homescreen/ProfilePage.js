@@ -32,7 +32,7 @@ const ProfilePage = () => {
         if (token) {
           setJwtToken(token);
           const response = await axios.get(
-            "http://192.168.0.5:3000/api/v1/auth/profile",
+            "https://amex-backend.onrender.com/api/v1/auth/profile",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -84,7 +84,7 @@ const ProfilePage = () => {
 
     try {
       const response = await axios.put(
-        "http://192.168.0.5:3000/api/v1/auth/update-profile-picture",
+        "https://amex-backend.onrender.com/api/v1/auth/update-profile-picture",
         formData,
         {
           headers: {
@@ -116,9 +116,9 @@ const ProfilePage = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.profileSection}>
-        <TouchableOpacity onPress={pickImage}>
+      <TouchableOpacity onPress={pickImage}>
           <Image
-            source={{ uri: profilePicture || "https://via.placeholder.com/60" }}
+            source={require("../../assets/home/TrackMudra.jpg")}
             style={styles.profileImage}
           />
         </TouchableOpacity>

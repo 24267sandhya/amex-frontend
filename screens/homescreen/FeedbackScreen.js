@@ -10,7 +10,7 @@ import {
 import axios from "axios";
 import { AuthContext } from "../../context/authContext";
 import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+
 
 const FeedbackScreen = ({ navigation }) => {
   const [feedback, setFeedback] = useState("");
@@ -24,7 +24,7 @@ const FeedbackScreen = ({ navigation }) => {
 
     try {
       const response = await axios.post(
-        "http://192.168.0.5:3000/api/v1/feedback",
+        "https://amex-backend.onrender.com/api/v1/feedback",
         { feedback, userId: authState.user._id },
         {
           headers: {
@@ -67,7 +67,6 @@ const FeedbackScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-      <Footer navigation={navigation} />
     </>
   );
 };

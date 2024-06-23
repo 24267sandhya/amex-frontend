@@ -16,7 +16,6 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import axios from "axios";
 import { AuthContext } from "../../../context/authContext";
 import moment from "moment";
-import Footer from "../../../components/Footer";
 import Header from "../../../components/Header";
 
 const SipCalculatorPage = () => {
@@ -221,7 +220,6 @@ const SipCalculatorPage = () => {
           </View>
         </ScrollView>
       </View>
-      <Footer navigation={navigation} />
     </>
   );
 };

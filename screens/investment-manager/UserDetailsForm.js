@@ -12,7 +12,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../../context/authContext";
 import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+
 
 const UserDetailsForm = () => {
   const [fullName, setFullName] = useState("");
@@ -113,13 +113,12 @@ const UserDetailsForm = () => {
             style={styles.input}
             value={investmentPassword}
             onChangeText={setPassword}
-            placeholder="Password"
+            placeholder="Set Password"
             secureTextEntry
           />
           <Button title="Submit" onPress={handleSubmit} color="#016FD0" />
         </ScrollView>
       </View>
-      <Footer navigation={navigation} />
     </>
   );
 };

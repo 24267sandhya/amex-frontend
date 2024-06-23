@@ -10,10 +10,9 @@ import {
 import io from "socket.io-client";
 import { AuthContext } from "../../context/authContext";
 import axios from "axios";
-import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 
-const socket = io("http://192.168.0.5:3000");
+const socket = io("https://amex-backend.onrender.com");
 
 const ChatScreen = ({ navigation }) => {
   const [message, setMessage] = useState("");
@@ -27,7 +26,7 @@ const ChatScreen = ({ navigation }) => {
     const fetchMessages = async () => {
       try {
         const response = await axios.get(
-          `http://192.168.0.5:3000/api/chat/${chatId}`
+          `https://amex-backend.onrender.com/api/chat/${chatId}`
         );
         setMessages(response.data);
       } catch (error) {
@@ -56,7 +55,7 @@ const ChatScreen = ({ navigation }) => {
 
       try {
         const response = await axios.post(
-          "http://192.168.0.5:3000/api/chat",
+          "https://amex-backend.onrender.com/api/chat",
           newMessage
         );
         socket.emit("sendMessage", response.data);
@@ -106,7 +105,6 @@ const ChatScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-      <Footer navigation={navigation} />
     </>
   );
 };

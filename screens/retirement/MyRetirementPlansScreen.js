@@ -22,7 +22,7 @@ const MyRetirementPlansScreen = ({ navigation }) => {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const response = await fetch("http://192.168.0.5:3000/api/plans");
+        const response = await fetch("https://amex-backend.onrender.com/api/plans");
         const data = await response.json();
         setPlans(data);
         setFilteredPlans(data);

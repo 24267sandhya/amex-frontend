@@ -13,7 +13,6 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { AuthContext } from "../../../context/authContext";
-import Footer from "../../../components/Footer";
 import Header from "../../../components/Header";
 
 const AddTransactionScreen = ({ navigation }) => {
@@ -241,7 +240,6 @@ const AddTransactionScreen = ({ navigation }) => {
           </TouchableOpacity>
         </ScrollView>
       </View>
-      <Footer navigation={navigation} />
     </>
   );
 };

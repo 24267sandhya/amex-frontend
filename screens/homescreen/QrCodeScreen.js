@@ -4,31 +4,47 @@ import QRCode from "react-native-qrcode-svg";
 import { AuthContext } from "../../context/authContext";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
+import axios from 'axios';
 
 const QrCodeScreen = ({ navigation }) => {
-  const [state] = useContext(AuthContext);
-  const [qrValue, setQrValue] = useState("");
+  const [authState] = useContext(AuthContext);
+  const [qrCode, setQrCode] = useState('');
 
   useEffect(() => {
-    if (state && state.user) {
-      setQrValue(state.user.email); // Use any unique identifier for the user
-    }
-  }, [state]);
+    const fetchQrCode = async () => {
+      try {
+        const response = await axios.get(`/api/v1/auth/qrcode/${authState.user._id}`, {
+          headers: {
+            Authorization: `Bearer ${authState.token}`,
+          },
+        });
+        setQrCode(response.data.qrCode);
+      } catch (error) {
+        console.log('Error fetching QR code:', error);
+      }
+    };
 
-  if (!qrValue) {
+    fetchQrCode();
+  }, [authState.user._id, authState.token]);
+
+  if (!qrCode) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   return (
     <>
       <Header />
-      <View style={styles.container}>
-        <Text style={styles.header}>Your QR Code</Text>
-        <QRCode value={qrValue} size={200} />
-        <Text style={styles.subHeader}>
-          Scan this QR code to get user details.
-        </Text>
-      </View>
+      {qrCode ? (
+        <View style={styles.container}>
+          <Text style={styles.header}>Your QR Code:</Text>
+          <QRCode value={qrCode} size={200} />
+          <Text style={styles.subHeader}>
+            Scan this QR code to get user details.
+          </Text>
+        </View>
+      ) : (
+        <Text>Loading QR Code...</Text>
+      )}
       <Footer navigation={navigation} />
     </>
   );

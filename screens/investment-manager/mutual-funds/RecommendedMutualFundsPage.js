@@ -393,7 +393,7 @@ const RecommendedMutualFundsPage = () => {
           <TouchableOpacity
             onPress={() => navigation.navigate("MutualFundsPage")}
           >
-            <Text style={[styles.subTab]}>Top Gainers</Text>
+            <Text style={[styles.subTab]}>General</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate("RecommendedMutualFundsPage")}

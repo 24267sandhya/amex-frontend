@@ -13,7 +13,6 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../../context/authContext";
 import { useNavigation } from "@react-navigation/native";
-import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 
 const UpdateProfilePage = () => {
@@ -44,7 +43,7 @@ const UpdateProfilePage = () => {
     setLoading(true);
     try {
       const response = await axios.put(
-        "http://192.168.0.5:3000/api/v1/auth/update-profile",
+        "https://amex-backend.onrender.com/api/v1/auth/update-profile",
         {
           name,
           email,
@@ -105,7 +104,6 @@ const UpdateProfilePage = () => {
           <Button title="Update Profile" onPress={handleUpdateProfile} />
         </ScrollView>
       </View>
-      <Footer navigation={navigation} />
     </>
   );
 };

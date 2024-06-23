@@ -17,7 +17,7 @@ const AuthProvider = ({ children }) => {
 
   // default axios setting
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  axios.defaults.baseURL = "http://192.168.0.5:3000";
+  axios.defaults.baseURL = "https://amex-backend.onrender.com";
 
   // initial local storage data
   useEffect(() => {

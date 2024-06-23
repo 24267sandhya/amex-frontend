@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://192.168.0.5:3000"; // Replace with your backend URL
+const BASE_URL = "https://amex-backend.onrender.com"; // Replace with your backend URL
 
 const getBardApi = async (userMsg) => {
   try {
