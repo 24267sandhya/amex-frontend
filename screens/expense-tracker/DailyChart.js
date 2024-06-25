@@ -38,9 +38,8 @@ const DailyChart = () => {
     .sort(
       (a, b) => new Date(b.transaction_date) - new Date(a.transaction_date)
     );
-  const totalExpense = dailyTransactions
-    .filter((t) => t.transaction_type === "debit")
-    .reduce((acc, transaction) => acc + transaction.amount, 0);
+
+  const totalExpense = dailyData.datasets[0].data.reduce((acc, value) => acc + value, 0);
 
   const chartConfig = {
     backgroundColor: "#002663",
@@ -169,13 +168,16 @@ const processData = (transactions, currentDate) => {
   transactions
     .filter(
       (t) =>
-        t.transaction_type === "debit" &&
         isSameDay(new Date(t.transaction_date), currentDate)
     )
     .forEach((transaction) => {
       const categoryIndex = labels.indexOf(transaction.category);
       if (categoryIndex !== -1) {
-        data[categoryIndex] += transaction.amount;
+        if (transaction.transaction_type === "debit") {
+          data[categoryIndex] += transaction.amount;
+        } else if (transaction.transaction_type === "credit") {
+          data[categoryIndex] -= transaction.amount;
+        }
       }
     });
 
