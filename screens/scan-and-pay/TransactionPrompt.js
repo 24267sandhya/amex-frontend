@@ -70,7 +70,14 @@ const TransactionPrompt = ({ route, navigation }) => {
           "The payment was processed successfully."
         );
         await fetchTransactions(); // Fetch the latest transactions
-        await checkGoals(); // Check goals after payment
+        await checkGoals(category); // Check goals after payment
+
+        // Clear input fields
+        setAmount("");
+        setCardId("");
+        setPaymentPassword("");
+        setCategory("Others");
+
         navigation.goBack();
       } else {
         Alert.alert("Payment Failed", response.data.message);
@@ -84,20 +91,63 @@ const TransactionPrompt = ({ route, navigation }) => {
     }
   };
 
-  const checkGoals = async () => {
+  const checkGoals = async (transactionCategory) => {
     try {
       const response = await axios.get("/api/v1/goal/get-goal", {
         headers: {
           Authorization: `Bearer ${state.token}`,
         },
       });
-      const goals = response.data;
+      const goals = response.data.filter(
+        (goal) => goal.category === transactionCategory
+      );
+      for (const goal of goals) {
+        const transactionsResponse = await axios.get(
+          "/api/v1/transaction/gettransactions",
+          {
+            headers: {
+              Authorization: `Bearer ${state.token}`,
+            },
+          }
+        );
+        const transactions = transactionsResponse.data;
 
-      goals.forEach(async (goal) => {
-        const now = new Date().setHours(0, 0, 0, 0);
-        const endDate = new Date(goal.endDate).setHours(0, 0, 0, 0);
-        const dayAfterEndDate = new Date(endDate);
-        dayAfterEndDate.setDate(dayAfterEndDate.getDate() + 1);
+        const startDate = new Date(goal.startDate);
+        startDate.setHours(0, 0, 0, 0);
+        const endDate = new Date(goal.endDate);
+        endDate.setHours(23, 59, 59, 999);
+
+        const totalDebits = transactions
+          .filter(
+            (t) =>
+              t.category === goal.category &&
+              t.transaction_type === "debit" &&
+              new Date(t.transaction_date) >= startDate &&
+              new Date(t.transaction_date) <= endDate
+          )
+          .reduce((acc, t) => acc + t.amount, 0);
+
+        const totalCredits = transactions
+          .filter(
+            (t) =>
+              t.category === goal.category &&
+              t.transaction_type === "credit" &&
+              new Date(t.transaction_date) >= startDate &&
+              new Date(t.transaction_date) <= endDate
+          )
+          .reduce((acc, t) => acc + t.amount, 0);
+
+        goal.currentAmount = totalDebits - totalCredits;
+
+        await axios.put(
+          `/api/v1/goal/update-goal/${goal._id}`,
+          { currentAmount: goal.currentAmount },
+          {
+            headers: {
+              Authorization: `Bearer ${state.token}`,
+            },
+          }
+        );
 
         if (goal.currentAmount > goal.amount) {
           Alert.alert(
@@ -120,6 +170,11 @@ const TransactionPrompt = ({ route, navigation }) => {
           );
         }
 
+        const now = new Date().setHours(0, 0, 0, 0);
+        const goalEndDate = new Date(goal.endDate).setHours(0, 0, 0, 0);
+        const dayAfterEndDate = new Date(goalEndDate);
+        dayAfterEndDate.setDate(dayAfterEndDate.getDate() + 1);
+
         if (
           now >= dayAfterEndDate.getTime() &&
           goal.currentAmount <= goal.amount
@@ -130,7 +185,7 @@ const TransactionPrompt = ({ route, navigation }) => {
           );
           await markGoalAsCompleted(goal._id); // Mark the goal as completed
         }
-      });
+      }
     } catch (error) {
       console.error("Error fetching goals:", error);
     }
@@ -261,7 +316,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   addButton: {
-    marginBottom: 20, // Added marginBottom to create a gap between the buttons
+    marginBottom: 20,
   },
   buttonText: {
     color: "#fff",
