@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
-  ScrollView,
 } from "react-native";
 import axios from "axios";
 import { AuthContext } from "../../context/authContext";
@@ -50,24 +49,40 @@ const GoalListScreen = ({ navigation }) => {
               },
             }
           );
+          const startDate = new Date(goal.startDate);
+          startDate.setHours(0, 0, 0, 0); // Set start date to the beginning of the day
           const endDate = new Date(goal.endDate);
-          endDate.setHours(23, 59, 59, 999); // Set end date to end of the day
-          const totalExpense = transactions.data
+          endDate.setHours(23, 59, 59, 999); // Set end date to the end of the day
+
+          // Calculate total debits in the category within the time frame
+          const totalDebits = transactions.data
             .filter(
               (t) =>
                 t.category === goal.category &&
                 t.transaction_type === "debit" &&
-                new Date(t.transaction_date) >= new Date(goal.startDate) &&
+                new Date(t.transaction_date) >= startDate &&
                 new Date(t.transaction_date) <= endDate
             )
             .reduce((acc, t) => acc + t.amount, 0);
 
-          goal.currentAmount = totalExpense;
+          // Calculate total credits in the category within the time frame
+          const totalCredits = transactions.data
+            .filter(
+              (t) =>
+                t.category === goal.category &&
+                t.transaction_type === "credit" &&
+                new Date(t.transaction_date) >= startDate &&
+                new Date(t.transaction_date) <= endDate
+            )
+            .reduce((acc, t) => acc + t.amount, 0);
+
+          // Calculate current amount based on debits minus credits
+          goal.currentAmount = totalDebits - totalCredits;
 
           // Update the current amount in the database
           await axios.put(
             `/api/v1/goal/update-goal/${goal._id}`,
-            { currentAmount: totalExpense },
+            { currentAmount: goal.currentAmount },
             {
               headers: {
                 Authorization: `Bearer ${authState.token}`,
