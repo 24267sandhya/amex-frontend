@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Icon } from "react-native-elements";
-import { LinearGradient } from "expo-linear-gradient"; // Make sure you have this import
+import { LinearGradient } from "expo-linear-gradient";
 import Header from "../../components/Header";
 import { startOfMonth, endOfMonth, parseISO, isWithinInterval } from "date-fns";
 import axios from "axios";
@@ -21,11 +21,11 @@ const HomePage = ({ navigation }) => {
   const [totalIncome, setTotalIncome] = useState(0);
   const [balance, setBalance] = useState(0);
   const [expense, setExpense] = useState(0);
-  const { transactions } = useContext(ExpenseContext);
+  const { transactions, incomes, fetchIncomes } = useContext(ExpenseContext);
 
   useEffect(() => {
     fetchIncomeData();
-  }, []);
+  }, [incomes]);
 
   useEffect(() => {
     calculateBalanceAndExpense();
@@ -59,6 +59,19 @@ const HomePage = ({ navigation }) => {
     const currentMonthStart = startOfMonth(new Date());
     const currentMonthEnd = endOfMonth(new Date());
 
+    const monthlyDebits = transactions.filter(
+      (transaction) =>
+        transaction.transaction_type === "debit" &&
+        isWithinInterval(parseISO(transaction.transaction_date), {
+          start: currentMonthStart,
+          end: currentMonthEnd,
+        })
+    );
+    const totalDebits = monthlyDebits.reduce(
+      (acc, transaction) => acc + transaction.amount,
+      0
+    );
+
     const monthlyCredits = transactions.filter(
       (transaction) =>
         transaction.transaction_type === "credit" &&
@@ -72,21 +85,10 @@ const HomePage = ({ navigation }) => {
       0
     );
 
-    const monthlyDebits = transactions.filter(
-      (transaction) =>
-        transaction.transaction_type === "debit" &&
-        isWithinInterval(parseISO(transaction.transaction_date), {
-          start: currentMonthStart,
-          end: currentMonthEnd,
-        })
-    );
-    const totalDebits = monthlyDebits.reduce(
-      (acc, transaction) => acc + transaction.amount,
-      0
-    );
-    setExpense(totalDebits);
+    const netExpense = totalDebits - totalCredits;
+    setExpense(netExpense);
 
-    const calculatedBalance = totalIncome + totalCredits - totalDebits;
+    const calculatedBalance = totalIncome - netExpense;
     setBalance(calculatedBalance);
   };
 
@@ -322,16 +324,16 @@ const styles = StyleSheet.create({
   },
   expenseCardContent: {
     flex: 1,
-    flexDirection:'column',
+    flexDirection: "column",
   },
   expenseCardTitle: {
     color: "#555",
-    marginTop:10,
+    marginTop: 10,
   },
   budgetCardTitle: {
     color: "#555",
-    marginTop:10,
-    flexDirection:'row',
+    marginTop: 10,
+    flexDirection: "row",
   },
   expenseAmount: {
     color: "red",
