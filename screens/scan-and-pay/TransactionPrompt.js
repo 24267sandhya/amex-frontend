@@ -170,42 +170,12 @@ const TransactionPrompt = ({ route, navigation }) => {
           );
         }
 
-        const now = new Date().setHours(0, 0, 0, 0);
-        const goalEndDate = new Date(goal.endDate).setHours(0, 0, 0, 0);
-        const dayAfterEndDate = new Date(goalEndDate);
-        dayAfterEndDate.setDate(dayAfterEndDate.getDate() + 1);
-
-        if (
-          now >= dayAfterEndDate.getTime() &&
-          goal.currentAmount <= goal.amount
-        ) {
-          Alert.alert(
-            "Goal Achieved!",
-            `Congratulations! You have achieved your goal of ₹${goal.amount} in the category ${goal.category}.`
-          );
-          await markGoalAsCompleted(goal._id); // Mark the goal as completed
-        }
       }
     } catch (error) {
       console.error("Error fetching goals:", error);
     }
   };
 
-  const markGoalAsCompleted = async (goalId) => {
-    try {
-      await axios.post(
-        `/api/v1/goal/mark-completed/${goalId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${state.token}`,
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Error marking goal as completed:", error);
-    }
-  };
 
   const handleAddCard = () => {
     navigation.navigate("SaveCardDetails");

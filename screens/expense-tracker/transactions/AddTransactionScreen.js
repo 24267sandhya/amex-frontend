@@ -41,8 +41,8 @@ const AddTransactionScreen = ({ navigation }) => {
       };
       await addTransaction(transaction);
       Alert.alert("Success", "Transaction added successfully");
-      await checkGoals(category); // Ensure checkGoals is awaited
       resetFields();
+      await checkGoals(category); // Ensure checkGoals is awaited
     } catch (error) {
       console.error("Error adding transaction:", error);
       Alert.alert("Error", "Something went wrong. Please try again.");
@@ -148,41 +148,9 @@ const AddTransactionScreen = ({ navigation }) => {
             `You have reached your limit of ₹${goal.amount} in the category ${goal.category}.`
           );
         }
-
-        const now = new Date().setHours(0, 0, 0, 0);
-        const goalEndDate = new Date(goal.endDate).setHours(0, 0, 0, 0);
-        const dayAfterEndDate = new Date(goalEndDate);
-        dayAfterEndDate.setDate(dayAfterEndDate.getDate() + 1);
-
-        if (
-          now >= dayAfterEndDate.getTime() &&
-          goal.currentAmount <= goal.amount
-        ) {
-          Alert.alert(
-            "Goal Achieved!",
-            `Congratulations! You have achieved your goal of ₹${goal.amount} in the category ${goal.category}.`
-          );
-          await markGoalAsCompleted(goal._id); // Mark the goal as completed
-        }
       }
     } catch (error) {
       console.error("Error fetching goals:", error);
-    }
-  };
-
-  const markGoalAsCompleted = async (goalId) => {
-    try {
-      await axios.post(
-        `/api/v1/goal/mark-completed/${goalId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${authState.token}`,
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Error marking goal as completed:", error);
     }
   };
 
