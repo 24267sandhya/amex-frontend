@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { AuthContext } from "../../../context/authContext";
+import { ExpenseContext } from "../../../context/expenseContext";
 import axios from "axios";
 
 import Header from "../../../components/Header";
@@ -17,6 +18,7 @@ const AddIncome = ({ navigation }) => {
   const [amount, setAmount] = useState("");
   const [month, setMonth] = useState("");
   const [authState] = useContext(AuthContext);
+  const { fetchIncomes } = useContext(ExpenseContext);
 
   const handleAddIncome = async () => {
     try {
@@ -30,6 +32,9 @@ const AddIncome = ({ navigation }) => {
         }
       );
       Alert.alert("Success", "Income added successfully");
+      fetchIncomes(); // Refresh incomes
+      setAmount(""); // Clear input fields
+      setMonth("");
       navigation.navigate("Home");
     } catch (error) {
       Alert.alert("Error", "Failed to add income");
