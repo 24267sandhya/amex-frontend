@@ -11,7 +11,6 @@ import {
   subWeeks,
   addWeeks,
   isWithinInterval,
-  getWeek,
 } from "date-fns";
 import NavigationArrows from "./utils/NavigationArrows";
 import Footer from "../../components/Footer";
@@ -39,17 +38,20 @@ const WeeklyChart = () => {
 
   const weeklyTransactions = transactions.filter(
     (transaction) =>
-      transaction.transaction_type === "debit" &&
       isWithinInterval(new Date(transaction.transaction_date), {
         start: currentWeekStart,
         end: currentWeekEnd,
       })
   );
 
-  const totalExpense = weeklyTransactions.reduce(
-    (acc, transaction) => acc + transaction.amount,
-    0
-  );
+  const totalExpense = weeklyTransactions.reduce((acc, transaction) => {
+    if (transaction.transaction_type === "debit") {
+      return acc + transaction.amount;
+    } else if (transaction.transaction_type === "credit") {
+      return acc - transaction.amount;
+    }
+    return acc;
+  }, 0);
 
   const weeklyData = processWeeklyData(
     weeklyTransactions,
@@ -173,7 +175,11 @@ const processWeeklyData = (transactions, startOfWeekDate, endOfWeekDate) => {
       isWithinInterval(date, { start: startOfWeekDate, end: endOfWeekDate })
     ) {
       const day = date.getDay();
-      data[day] += transaction.amount;
+      if (transaction.transaction_type === "debit") {
+        data[day] += transaction.amount;
+      } else if (transaction.transaction_type === "credit") {
+        data[day] -= transaction.amount;
+      }
     }
   });
 
@@ -199,7 +205,14 @@ const processCategoryData = (transactions) => {
   const data = categories.map((category) => {
     const total = transactions
       .filter((transaction) => transaction.category === category)
-      .reduce((sum, transaction) => sum + transaction.amount, 0);
+      .reduce((sum, transaction) => {
+        if (transaction.transaction_type === "debit") {
+          return sum + transaction.amount;
+        } else if (transaction.transaction_type === "credit") {
+          return sum - transaction.amount;
+        }
+        return sum;
+      }, 0);
     return {
       name: category,
       amount: total,
@@ -208,7 +221,7 @@ const processCategoryData = (transactions) => {
       legendFontSize: 15,
     };
   });
-  return data.filter((item) => item.amount > 0);
+  return data.filter((item) => item.amount !== 0);
 };
 
 const getColorForCategory = (category) => {
