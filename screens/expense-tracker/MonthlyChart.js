@@ -37,20 +37,23 @@ const MonthlyChart = () => {
   const currentMonthStart = startOfMonth(currentMonth);
   const currentMonthEnd = endOfMonth(currentMonth);
 
-  const currentMonthTransactions = transactions.filter(
-    (transaction) =>
-      transaction.transaction_type === "debit" &&
-      isWithinInterval(parseISO(transaction.transaction_date), {
-        start: currentMonthStart,
-        end: currentMonthEnd,
-      })
+  const currentMonthTransactions = transactions.filter((transaction) =>
+    isWithinInterval(parseISO(transaction.transaction_date), {
+      start: currentMonthStart,
+      end: currentMonthEnd,
+    })
   );
 
   const monthlyData = processMonthlyData(currentMonthTransactions);
-  const totalExpense = currentMonthTransactions.reduce(
-    (acc, transaction) => acc + transaction.amount,
-    0
-  );
+  const totalExpense = currentMonthTransactions.reduce((acc, transaction) => {
+    if (transaction.transaction_type === "debit") {
+      return acc + transaction.amount;
+    } else if (transaction.transaction_type === "credit") {
+      return acc - transaction.amount;
+    }
+    return acc;
+  }, 0);
+
   const categoryData = processCategoryData(currentMonthTransactions);
 
   const chartConfig = {
@@ -173,7 +176,11 @@ const processMonthlyData = (transactions) => {
   transactions.forEach((transaction) => {
     const date = parseISO(transaction.transaction_date);
     const weekIndex = getWeekOfMonth(date, { weekStartsOn: 1 }) - 1;
-    data[weekIndex] += transaction.amount;
+    if (transaction.transaction_type === "debit") {
+      data[weekIndex] += transaction.amount;
+    } else if (transaction.transaction_type === "credit") {
+      data[weekIndex] -= transaction.amount;
+    }
   });
 
   return {
@@ -191,7 +198,14 @@ const processCategoryData = (transactions) => {
   const data = categories.map((category) => {
     const total = transactions
       .filter((transaction) => transaction.category === category)
-      .reduce((sum, transaction) => sum + transaction.amount, 0);
+      .reduce((sum, transaction) => {
+        if (transaction.transaction_type === "debit") {
+          return sum + transaction.amount;
+        } else if (transaction.transaction_type === "credit") {
+          return sum - transaction.amount;
+        }
+        return sum;
+      }, 0);
     return {
       name: category,
       amount: total,
