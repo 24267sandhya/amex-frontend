@@ -1,5 +1,4 @@
 import React, { createContext, useReducer, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 const ExpenseContext = createContext();
@@ -85,7 +84,14 @@ const ExpenseProvider = ({ children }) => {
 
   return (
     <ExpenseContext.Provider
-      value={{ ...state, addTransaction, addIncome, fetchTransactions }}
+      value={{
+        transactions: state.transactions,
+        incomes: state.incomes,
+        addTransaction,
+        addIncome,
+        fetchTransactions,
+        fetchIncomes,
+      }}
     >
       {children}
     </ExpenseContext.Provider>
