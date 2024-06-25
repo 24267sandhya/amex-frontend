@@ -42,10 +42,19 @@ const AddTransactionScreen = ({ navigation }) => {
       await addTransaction(transaction);
       Alert.alert("Success", "Transaction added successfully");
       await checkGoals(category); // Ensure checkGoals is awaited
+      resetFields();
     } catch (error) {
       console.error("Error adding transaction:", error);
       Alert.alert("Error", "Something went wrong. Please try again.");
     }
+  };
+
+  const resetFields = () => {
+    setAmount("");
+    setTransactionType("debit");
+    setMerchant("");
+    setDate(new Date());
+    setCategory("Food");
   };
 
   const showDatePickerHandler = () => {
@@ -80,22 +89,38 @@ const AddTransactionScreen = ({ navigation }) => {
         );
         const transactions = transactionsResponse.data;
 
-        const endDate = new Date(goal.endDate).setHours(23, 59, 59, 999);
-        const totalExpense = transactions
+        const startDate = new Date(goal.startDate);
+        startDate.setHours(0, 0, 0, 0); // Set start date to beginning of the day
+        const endDate = new Date(goal.endDate);
+        endDate.setHours(23, 59, 59, 999); // Set end date to end of the day
+
+        const totalDebits = transactions
           .filter(
             (t) =>
               t.category === goal.category &&
               t.transaction_type === "debit" &&
-              new Date(t.transaction_date) >= new Date(goal.startDate) &&
+              new Date(t.transaction_date) >= startDate &&
               new Date(t.transaction_date) <= endDate
           )
           .reduce((acc, t) => acc + t.amount, 0);
-        goal.currentAmount = totalExpense;
+
+        const totalCredits = transactions
+          .filter(
+            (t) =>
+              t.category === goal.category &&
+              t.transaction_type === "credit" &&
+              new Date(t.transaction_date) >= startDate &&
+              new Date(t.transaction_date) <= endDate
+          )
+          .reduce((acc, t) => acc + t.amount, 0);
+
+        // Calculate current amount based on debits minus credits
+        goal.currentAmount = totalDebits - totalCredits;
 
         // Update goal current amount
         await axios.put(
           `/api/v1/goal/update-goal/${goal._id}`,
-          { currentAmount: totalExpense },
+          { currentAmount: goal.currentAmount },
           {
             headers: {
               Authorization: `Bearer ${authState.token}`,
