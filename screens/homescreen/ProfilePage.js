@@ -160,7 +160,7 @@ const ProfilePage = () => {
           onPress={() => navigation.navigate("QrCodeScreen")}
         >
           <Ionicons name="qr-code-outline" size={24} color="black" />
-          <Text style={styles.optionText}>Scan QR code</Text>
+          <Text style={styles.optionText}>Your QR code</Text>
         </TouchableOpacity>
       </View>
 
